@@ -1,0 +1,260 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Scenes/PlatformElement.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Scenes/Player.tscn" type="PackedScene" id=2]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Platforms" type="Node2D" parent="."]
+
+[node name="Level1" type="Node2D" parent="Platforms"]
+
+[node name="PlatformElement" parent="Platforms/Level1" instance=ExtResource( 1 )]
+position = Vector2( 8, 295 )
+
+[node name="PlatformElement2" parent="Platforms/Level1" instance=ExtResource( 1 )]
+position = Vector2( 24, 295 )
+
+[node name="PlatformElement3" parent="Platforms/Level1" instance=ExtResource( 1 )]
+position = Vector2( 40, 295 )
+
+[node name="PlatformElement4" parent="Platforms/Level1" instance=ExtResource( 1 )]
+position = Vector2( 56, 295 )
+
+[node name="PlatformElement5" parent="Platforms/Level1" instance=ExtResource( 1 )]
+position = Vector2( 88, 295 )
+
+[node name="PlatformElement6" parent="Platforms/Level1" instance=ExtResource( 1 )]
+position = Vector2( 72, 295 )
+
+[node name="PlatformElement7" parent="Platforms/Level1" instance=ExtResource( 1 )]
+position = Vector2( 104, 295 )
+
+[node name="PlatformElement8" parent="Platforms/Level1" instance=ExtResource( 1 )]
+position = Vector2( 120, 294 )
+
+[node name="PlatformElement9" parent="Platforms/Level1" instance=ExtResource( 1 )]
+position = Vector2( 136, 293 )
+
+[node name="PlatformElement10" parent="Platforms/Level1" instance=ExtResource( 1 )]
+position = Vector2( 152, 292 )
+
+[node name="PlatformElement11" parent="Platforms/Level1" instance=ExtResource( 1 )]
+position = Vector2( 168, 291 )
+
+[node name="PlatformElement12" parent="Platforms/Level1" instance=ExtResource( 1 )]
+position = Vector2( 184, 290 )
+
+[node name="PlatformElement13" parent="Platforms/Level1" instance=ExtResource( 1 )]
+position = Vector2( 200, 289 )
+
+[node name="PlatformElement14" parent="Platforms/Level1" instance=ExtResource( 1 )]
+position = Vector2( 216, 288 )
+
+[node name="Level2" type="Node2D" parent="Platforms"]
+
+[node name="PlatformElement" parent="Platforms/Level2" instance=ExtResource( 1 )]
+position = Vector2( 200, 263 )
+
+[node name="PlatformElement2" parent="Platforms/Level2" instance=ExtResource( 1 )]
+position = Vector2( 184, 262 )
+
+[node name="PlatformElement3" parent="Platforms/Level2" instance=ExtResource( 1 )]
+position = Vector2( 168, 261 )
+
+[node name="PlatformElement4" parent="Platforms/Level2" instance=ExtResource( 1 )]
+position = Vector2( 152, 260 )
+
+[node name="PlatformElement5" parent="Platforms/Level2" instance=ExtResource( 1 )]
+position = Vector2( 136, 259 )
+
+[node name="PlatformElement6" parent="Platforms/Level2" instance=ExtResource( 1 )]
+position = Vector2( 120, 258 )
+
+[node name="PlatformElement7" parent="Platforms/Level2" instance=ExtResource( 1 )]
+position = Vector2( 104, 257 )
+
+[node name="PlatformElement8" parent="Platforms/Level2" instance=ExtResource( 1 )]
+position = Vector2( 88, 256 )
+
+[node name="PlatformElement9" parent="Platforms/Level2" instance=ExtResource( 1 )]
+position = Vector2( 72, 255 )
+
+[node name="PlatformElement10" parent="Platforms/Level2" instance=ExtResource( 1 )]
+position = Vector2( 56, 254 )
+
+[node name="PlatformElement11" parent="Platforms/Level2" instance=ExtResource( 1 )]
+position = Vector2( 40, 253 )
+
+[node name="PlatformElement12" parent="Platforms/Level2" instance=ExtResource( 1 )]
+position = Vector2( 24, 252 )
+
+[node name="PlatformElement13" parent="Platforms/Level2" instance=ExtResource( 1 )]
+position = Vector2( 8, 251 )
+
+[node name="Level3" type="Node2D" parent="Platforms"]
+
+[node name="PlatformElement15" parent="Platforms/Level3" instance=ExtResource( 1 )]
+position = Vector2( 24, 226 )
+
+[node name="PlatformElement16" parent="Platforms/Level3" instance=ExtResource( 1 )]
+position = Vector2( 40, 225 )
+
+[node name="PlatformElement17" parent="Platforms/Level3" instance=ExtResource( 1 )]
+position = Vector2( 56, 224 )
+
+[node name="PlatformElement18" parent="Platforms/Level3" instance=ExtResource( 1 )]
+position = Vector2( 72, 223 )
+
+[node name="PlatformElement19" parent="Platforms/Level3" instance=ExtResource( 1 )]
+position = Vector2( 88, 222 )
+
+[node name="PlatformElement20" parent="Platforms/Level3" instance=ExtResource( 1 )]
+position = Vector2( 104, 221 )
+
+[node name="PlatformElement21" parent="Platforms/Level3" instance=ExtResource( 1 )]
+position = Vector2( 120, 220 )
+
+[node name="PlatformElement22" parent="Platforms/Level3" instance=ExtResource( 1 )]
+position = Vector2( 136, 219 )
+
+[node name="PlatformElement23" parent="Platforms/Level3" instance=ExtResource( 1 )]
+position = Vector2( 152, 218 )
+
+[node name="PlatformElement24" parent="Platforms/Level3" instance=ExtResource( 1 )]
+position = Vector2( 168, 217 )
+
+[node name="PlatformElement25" parent="Platforms/Level3" instance=ExtResource( 1 )]
+position = Vector2( 184, 216 )
+
+[node name="PlatformElement26" parent="Platforms/Level3" instance=ExtResource( 1 )]
+position = Vector2( 200, 215 )
+
+[node name="PlatformElement27" parent="Platforms/Level3" instance=ExtResource( 1 )]
+position = Vector2( 216, 214 )
+
+[node name="Level4" type="Node2D" parent="Platforms"]
+
+[node name="PlatformElement14" parent="Platforms/Level4" instance=ExtResource( 1 )]
+position = Vector2( 200, 189 )
+
+[node name="PlatformElement15" parent="Platforms/Level4" instance=ExtResource( 1 )]
+position = Vector2( 184, 188 )
+
+[node name="PlatformElement16" parent="Platforms/Level4" instance=ExtResource( 1 )]
+position = Vector2( 168, 187 )
+
+[node name="PlatformElement17" parent="Platforms/Level4" instance=ExtResource( 1 )]
+position = Vector2( 152, 186 )
+
+[node name="PlatformElement18" parent="Platforms/Level4" instance=ExtResource( 1 )]
+position = Vector2( 136, 185 )
+
+[node name="PlatformElement19" parent="Platforms/Level4" instance=ExtResource( 1 )]
+position = Vector2( 120, 184 )
+
+[node name="PlatformElement20" parent="Platforms/Level4" instance=ExtResource( 1 )]
+position = Vector2( 104, 183 )
+
+[node name="PlatformElement21" parent="Platforms/Level4" instance=ExtResource( 1 )]
+position = Vector2( 88, 182 )
+
+[node name="PlatformElement22" parent="Platforms/Level4" instance=ExtResource( 1 )]
+position = Vector2( 72, 181 )
+
+[node name="PlatformElement23" parent="Platforms/Level4" instance=ExtResource( 1 )]
+position = Vector2( 56, 180 )
+
+[node name="PlatformElement24" parent="Platforms/Level4" instance=ExtResource( 1 )]
+position = Vector2( 40, 179 )
+
+[node name="PlatformElement25" parent="Platforms/Level4" instance=ExtResource( 1 )]
+position = Vector2( 24, 178 )
+
+[node name="PlatformElement26" parent="Platforms/Level4" instance=ExtResource( 1 )]
+position = Vector2( 8, 177 )
+
+[node name="Level5" type="Node2D" parent="Platforms"]
+
+[node name="PlatformElement28" parent="Platforms/Level5" instance=ExtResource( 1 )]
+position = Vector2( 24, 152 )
+
+[node name="PlatformElement29" parent="Platforms/Level5" instance=ExtResource( 1 )]
+position = Vector2( 40, 151 )
+
+[node name="PlatformElement30" parent="Platforms/Level5" instance=ExtResource( 1 )]
+position = Vector2( 56, 150 )
+
+[node name="PlatformElement31" parent="Platforms/Level5" instance=ExtResource( 1 )]
+position = Vector2( 72, 149 )
+
+[node name="PlatformElement32" parent="Platforms/Level5" instance=ExtResource( 1 )]
+position = Vector2( 88, 148 )
+
+[node name="PlatformElement33" parent="Platforms/Level5" instance=ExtResource( 1 )]
+position = Vector2( 104, 147 )
+
+[node name="PlatformElement34" parent="Platforms/Level5" instance=ExtResource( 1 )]
+position = Vector2( 120, 146 )
+
+[node name="PlatformElement35" parent="Platforms/Level5" instance=ExtResource( 1 )]
+position = Vector2( 136, 145 )
+
+[node name="PlatformElement36" parent="Platforms/Level5" instance=ExtResource( 1 )]
+position = Vector2( 152, 144 )
+
+[node name="PlatformElement37" parent="Platforms/Level5" instance=ExtResource( 1 )]
+position = Vector2( 168, 143 )
+
+[node name="PlatformElement38" parent="Platforms/Level5" instance=ExtResource( 1 )]
+position = Vector2( 184, 142 )
+
+[node name="PlatformElement39" parent="Platforms/Level5" instance=ExtResource( 1 )]
+position = Vector2( 200, 141 )
+
+[node name="PlatformElement40" parent="Platforms/Level5" instance=ExtResource( 1 )]
+position = Vector2( 216, 140 )
+
+[node name="Level6" type="Node2D" parent="Platforms"]
+
+[node name="PlatformElement27" parent="Platforms/Level6" instance=ExtResource( 1 )]
+position = Vector2( 200, 115 )
+
+[node name="PlatformElement28" parent="Platforms/Level6" instance=ExtResource( 1 )]
+position = Vector2( 184, 114 )
+
+[node name="PlatformElement29" parent="Platforms/Level6" instance=ExtResource( 1 )]
+position = Vector2( 168, 113 )
+
+[node name="PlatformElement30" parent="Platforms/Level6" instance=ExtResource( 1 )]
+position = Vector2( 152, 112 )
+
+[node name="PlatformElement15" parent="Platforms/Level6" instance=ExtResource( 1 )]
+position = Vector2( 40, 112 )
+
+[node name="PlatformElement16" parent="Platforms/Level6" instance=ExtResource( 1 )]
+position = Vector2( 56, 112 )
+
+[node name="PlatformElement22" parent="Platforms/Level6" instance=ExtResource( 1 )]
+position = Vector2( 8, 112 )
+
+[node name="PlatformElement23" parent="Platforms/Level6" instance=ExtResource( 1 )]
+position = Vector2( 24, 112 )
+
+[node name="PlatformElement17" parent="Platforms/Level6" instance=ExtResource( 1 )]
+position = Vector2( 72, 112 )
+
+[node name="PlatformElement18" parent="Platforms/Level6" instance=ExtResource( 1 )]
+position = Vector2( 88, 112 )
+
+[node name="PlatformElement19" parent="Platforms/Level6" instance=ExtResource( 1 )]
+position = Vector2( 120, 112 )
+
+[node name="PlatformElement20" parent="Platforms/Level6" instance=ExtResource( 1 )]
+position = Vector2( 104, 112 )
+
+[node name="PlatformElement21" parent="Platforms/Level6" instance=ExtResource( 1 )]
+position = Vector2( 136, 112 )
+
+[node name="Player" parent="." instance=ExtResource( 2 )]
+position = Vector2( 216, 128 )

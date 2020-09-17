@@ -1,0 +1,157 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://Assets/jumpman.png" type="Texture" id=1]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends KinematicBody2D
+
+const SPEED = 60
+const GRAVITY = 400
+const JUMP_POWER = 150
+const UP_VECTOR = Vector2(0,-1) #indicator, how the up direction is defined 
+
+var moveOffset = Vector2()
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+func _process(delta):
+	moveOffset.x = 0
+	
+	moveOffset.y += GRAVITY * delta # make fall faster the longer the fall
+		
+	check_key_input()
+	handle_climb_platform()
+	
+	moveOffset = move_and_slide(moveOffset, UP_VECTOR)
+	
+	set_animation()
+
+
+
+func check_key_input():
+	
+	if Input.is_action_pressed(\"left\") and position.x > 8:
+		moveOffset.x = -1 * SPEED
+	
+	if Input.is_action_pressed(\"right\") and position.x < 216:
+		moveOffset.x = 1 * SPEED
+	
+	if Input.is_action_just_pressed(\"jump\") and is_on_floor():
+		moveOffset.y = -JUMP_POWER
+
+
+func set_animation():
+	# set animation and image flipping according to moveOffset
+	if moveOffset.x > 0:
+		$Sprite.flip_h = false
+		if is_on_floor():
+			$AnimationPlayer.play(\"running\")
+		else:
+			if Input.is_action_just_pressed(\"jump\"):
+				$AnimationPlayer.play(\"jump\")
+
+	elif moveOffset.x < 0:
+		$Sprite.flip_h = true
+		if is_on_floor():
+			$AnimationPlayer.play(\"running\")
+		else:
+			if Input.is_action_just_pressed(\"jump\"):
+				$AnimationPlayer.play(\"jump\")
+				
+	else:
+		$AnimationPlayer.play(\"idle\") if is_on_floor() else $AnimationPlayer.play(\"jump\")
+
+func handle_climb_platform():
+	# handle ascending platform climbing
+	
+	for body in $ClimbPlatformHitBox.get_overlapping_bodies():
+		if body.name.begins_with(\"Platform\"):
+			if moveOffset.x > 0:
+				position += Vector2(1,-1)
+			else:
+				position += Vector2(-1,-1)
+"
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 10, 8 )
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 53.3333, 10 )
+
+[sub_resource type="Animation" id=4]
+resource_name = "idle"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 0, 0 ]
+}
+
+[sub_resource type="Animation" id=6]
+resource_name = "jump"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 3, 0 ]
+}
+
+[sub_resource type="Animation" id=5]
+resource_name = "running"
+length = 0.3
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.15 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 1, 2 ]
+}
+
+[node name="Player" type="KinematicBody2D"]
+script = SubResource( 1 )
+
+[node name="Sprite" type="Sprite" parent="."]
+position = Vector2( -1, -8 )
+texture = ExtResource( 1 )
+hframes = 4
+frame = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( 0, -8 )
+scale = Vector2( 0.6, 1 )
+shape = SubResource( 2 )
+
+[node name="ClimbPlatformHitBox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ClimbPlatformHitBox"]
+position = Vector2( 0, -1 )
+scale = Vector2( 0.13, 0.1 )
+shape = SubResource( 3 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/idle = SubResource( 4 )
+anims/jump = SubResource( 6 )
+anims/running = SubResource( 5 )

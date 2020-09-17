@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+func _ready():
+	add_level()
+	
+func add_level():
+	# load level, specified by GlobalData as current level
+	
+	var level_src = str(\"res://Scenes/Levels/L\", 
+						GlobalData.level,
+						\".tscn\")
+	var level = load(level_src).instance()
+	$Level.add_child(level)
+"
+
+[node name="Game" type="Node2D"]
+script = SubResource( 1 )
+
+[node name="Level" type="Node2D" parent="."]
