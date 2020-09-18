@@ -5,27 +5,32 @@
 [sub_resource type="GDScript" id=1]
 script/source = "extends KinematicBody2D
 
+onready var animation = $AnimationPlayer
+
 const SPEED = 60
-const GRAVITY = 400
+const GRAVITY = 200
 const JUMP_POWER = 150
 const UP_VECTOR = Vector2(0,-1) #indicator, how the up direction is defined 
 
-var moveOffset = Vector2()
+var move_offset = Vector2()
 
+var jump_mode = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
 
 func _process(delta):
-	moveOffset.x = 0
+	move_offset.x = 0
+	move_offset.y += GRAVITY * delta # make fall faster the longer the fall
 	
-	moveOffset.y += GRAVITY * delta # make fall faster the longer the fall
+	if jump_mode and is_on_floor():
+		jump_mode = false
 		
 	check_key_input()
 	handle_climb_platform()
 	
-	moveOffset = move_and_slide(moveOffset, UP_VECTOR)
+	move_offset = move_and_slide(move_offset, UP_VECTOR)
 	
 	set_animation()
 
@@ -34,44 +39,34 @@ func _process(delta):
 func check_key_input():
 	
 	if Input.is_action_pressed(\"left\") and position.x > 8:
-		moveOffset.x = -1 * SPEED
+		move_offset.x = -1 * SPEED
 	
 	if Input.is_action_pressed(\"right\") and position.x < 216:
-		moveOffset.x = 1 * SPEED
+		move_offset.x = 1 * SPEED
 	
 	if Input.is_action_just_pressed(\"jump\") and is_on_floor():
-		moveOffset.y = -JUMP_POWER
+		move_offset.y = -JUMP_POWER
+		jump_mode = true
 
 
 func set_animation():
 	# set animation and image flipping according to moveOffset
-	if moveOffset.x > 0:
+	if move_offset.x > 0:
 		$Sprite.flip_h = false
-		if is_on_floor():
-			$AnimationPlayer.play(\"running\")
-		else:
-			if Input.is_action_just_pressed(\"jump\"):
-				$AnimationPlayer.play(\"jump\")
-
-	elif moveOffset.x < 0:
+		animation.play(\"jump\") if jump_mode else animation.play(\"running\")
+	elif move_offset.x < 0:
 		$Sprite.flip_h = true
-		if is_on_floor():
-			$AnimationPlayer.play(\"running\")
-		else:
-			if Input.is_action_just_pressed(\"jump\"):
-				$AnimationPlayer.play(\"jump\")
-				
+		animation.play(\"jump\") if jump_mode else animation.play(\"running\")
 	else:
-		$AnimationPlayer.play(\"idle\") if is_on_floor() else $AnimationPlayer.play(\"jump\")
+		animation.play(\"jump\") if jump_mode else animation.play(\"idle\")
 
 func handle_climb_platform():
 	# handle ascending platform climbing
-	
 	for body in $ClimbPlatformHitBox.get_overlapping_bodies():
 		if body.name.begins_with(\"Platform\"):
-			if moveOffset.x > 0:
+			if move_offset.x > 0:
 				position += Vector2(1,-1)
-			else:
+			elif move_offset.x < 0:
 				position += Vector2(-1,-1)
 "
 
@@ -79,7 +74,7 @@ func handle_climb_platform():
 extents = Vector2( 10, 8 )
 
 [sub_resource type="RectangleShape2D" id=3]
-extents = Vector2( 53.3333, 10 )
+extents = Vector2( 61.5385, 10 )
 
 [sub_resource type="Animation" id=4]
 resource_name = "idle"
@@ -97,7 +92,7 @@ tracks/0/keys = {
 "values": [ 0, 0 ]
 }
 
-[sub_resource type="Animation" id=6]
+[sub_resource type="Animation" id=5]
 resource_name = "jump"
 length = 0.5
 tracks/0/type = "value"
@@ -113,8 +108,7 @@ tracks/0/keys = {
 "values": [ 3, 0 ]
 }
 
-[sub_resource type="Animation" id=5]
-resource_name = "running"
+[sub_resource type="Animation" id=6]
 length = 0.3
 loop = true
 tracks/0/type = "value"
@@ -137,7 +131,7 @@ script = SubResource( 1 )
 position = Vector2( -1, -8 )
 texture = ExtResource( 1 )
 hframes = 4
-frame = 3
+frame = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 0, -8 )
@@ -148,10 +142,10 @@ shape = SubResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ClimbPlatformHitBox"]
 position = Vector2( 0, -1 )
-scale = Vector2( 0.13, 0.1 )
+scale = Vector2( 0.099, 0.1 )
 shape = SubResource( 3 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/idle = SubResource( 4 )
-anims/jump = SubResource( 6 )
-anims/running = SubResource( 5 )
+anims/jump = SubResource( 5 )
+anims/running = SubResource( 6 )
