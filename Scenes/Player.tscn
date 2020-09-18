@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Assets/jumpman.png" type="Texture" id=1]
 
@@ -9,7 +9,7 @@ onready var animation = $AnimationPlayer
 
 const SPEED = 60
 const GRAVITY = 200
-const JUMP_POWER = 150
+const JUMP_POWER = 70
 const UP_VECTOR = Vector2(0,-1) #indicator, how the up direction is defined 
 
 var move_offset = Vector2()
@@ -124,6 +124,8 @@ tracks/0/keys = {
 "values": [ 1, 2 ]
 }
 
+[sub_resource type="RectangleShape2D" id=7]
+
 [node name="Player" type="KinematicBody2D"]
 script = SubResource( 1 )
 
@@ -133,7 +135,9 @@ texture = ExtResource( 1 )
 hframes = 4
 frame = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="ObjectHitBox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ObjectHitBox"]
 position = Vector2( 0, -8 )
 scale = Vector2( 0.6, 1 )
 shape = SubResource( 2 )
@@ -149,3 +153,8 @@ shape = SubResource( 3 )
 anims/idle = SubResource( 4 )
 anims/jump = SubResource( 5 )
 anims/running = SubResource( 6 )
+
+[node name="PlatformCollisionShape" type="CollisionShape2D" parent="."]
+position = Vector2( 0, -1 )
+scale = Vector2( 0.5, 0.1 )
+shape = SubResource( 7 )
