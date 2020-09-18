@@ -1,9 +1,10 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Scenes/PlatformElement.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scenes/Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Scenes/Barrel.tscn" type="PackedScene" id=3]
 
-[node name="Node2D" type="Node2D"]
+[node name="L1" type="Node2D"]
 
 [node name="Platforms" type="Node2D" parent="."]
 
@@ -258,3 +259,9 @@ position = Vector2( 136, 112 )
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
 position = Vector2( 216, 128 )
+
+[node name="Barrel" parent="." instance=ExtResource( 3 )]
+position = Vector2( 88, 32 )
+
+[node name="Barrel2" parent="." instance=ExtResource( 3 )]
+position = Vector2( 176, 64 )

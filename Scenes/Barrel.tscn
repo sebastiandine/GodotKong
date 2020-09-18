@@ -1,0 +1,81 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Assets/barrel.png" type="Texture" id=1]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends KinematicBody2D
+
+onready var animation = $AnimationPlayer
+
+const SPEED = 50
+const GRAVITY = 200
+const JUMP_POWER = 70
+const UP_VECTOR = Vector2(0,-1) #indicator, how the up direction is defined 
+
+var move_offset = Vector2()
+var direction = 1 # 1 = right, -1 left
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	animation.play(\"rolling\")
+
+
+
+func _process(delta):
+	check_destroy()
+	if is_on_floor():
+		move_offset.y = 0
+		if floor(position.x) == 216:
+			animation.play_backwards(\"rolling\")
+			direction = -1
+		if floor(position.x) == 8:
+			animation.play(\"rolling\")
+			direction = 1
+		move_offset.x = direction * SPEED
+	else:
+		move_offset.x = 0
+		move_offset.y += GRAVITY * delta # make fall faster the longer the fall
+
+	move_and_slide_with_snap(move_offset, Vector2(0,1), UP_VECTOR)
+
+func check_destroy():
+	if floor(position.x) == 8 and position.y > 280:
+		 queue_free()
+	
+"
+
+[sub_resource type="CircleShape2D" id=2]
+
+[sub_resource type="Animation" id=3]
+resource_name = "rolling"
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2, 0.4, 0.6 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 0, 1, 2, 3 ]
+}
+
+[node name="Barrel" type="KinematicBody2D"]
+script = SubResource( 1 )
+
+[node name="Sprite" type="Sprite" parent="."]
+position = Vector2( 0, -5 )
+texture = ExtResource( 1 )
+vframes = 2
+hframes = 5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( 0, -5 )
+scale = Vector2( 0.6, 0.5 )
+shape = SubResource( 2 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/rolling = SubResource( 3 )
