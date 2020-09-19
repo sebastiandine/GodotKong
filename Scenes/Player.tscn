@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Assets/jumpman.png" type="Texture" id=1]
 
@@ -15,6 +15,10 @@ const UP_VECTOR = Vector2(0,-1) #indicator, how the up direction is defined
 var move_offset = Vector2()
 
 var jump_mode = false
+var ladder_mode = false
+var climb_up_ladder_mode = false
+
+var climb_animation_timer = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -22,13 +26,18 @@ func _ready():
 
 func _process(delta):
 	move_offset.x = 0
-	move_offset.y += GRAVITY * delta # make fall faster the longer the fall
+	
+	if ladder_mode:
+		move_offset.y = 0
+	else:
+		move_offset.y += GRAVITY * delta # make fall faster the longer the fall
 	
 	if jump_mode and is_on_floor():
 		jump_mode = false
 		
 	check_key_input()
 	handle_climb_platform()
+	handle_climb_ladder()
 	
 	move_offset = move_and_slide(move_offset, UP_VECTOR)
 	
@@ -38,27 +47,41 @@ func _process(delta):
 
 func check_key_input():
 	
-	if Input.is_action_pressed(\"left\") and position.x > 8:
-		move_offset.x = -1 * SPEED
-	
-	if Input.is_action_pressed(\"right\") and position.x < 216:
-		move_offset.x = 1 * SPEED
-	
-	if Input.is_action_just_pressed(\"jump\") and is_on_floor():
-		move_offset.y = -JUMP_POWER
-		jump_mode = true
+	if not ladder_mode:
+		if Input.is_action_pressed(\"left\") and position.x > 8:
+			move_offset.x = -1 * SPEED
+		
+		if Input.is_action_pressed(\"right\") and position.x < 216:
+			move_offset.x = 1 * SPEED
+		
+		if Input.is_action_just_pressed(\"jump\") and is_on_floor():
+			move_offset.y = -JUMP_POWER
+			jump_mode = true
+	else:
+		if Input.is_action_pressed(\"jump\") and climb_up_ladder_mode:
+			move_offset.y = -5
+		if Input.is_action_pressed(\"down\"):
+			move_offset.y = 5
 
 
 func set_animation():
 	# set animation and image flipping according to moveOffset
-	if move_offset.x > 0:
-		$Sprite.flip_h = false
-		animation.play(\"jump\") if jump_mode else animation.play(\"running\")
-	elif move_offset.x < 0:
-		$Sprite.flip_h = true
-		animation.play(\"jump\") if jump_mode else animation.play(\"running\")
+	if not ladder_mode:
+		if move_offset.x > 0:
+			$Sprite.flip_h = false
+			animation.play(\"jump\") if jump_mode else animation.play(\"running\")
+		elif move_offset.x < 0:
+			$Sprite.flip_h = true
+			animation.play(\"jump\") if jump_mode else animation.play(\"running\")
+		else:
+			animation.play(\"jump\") if jump_mode else animation.play(\"idle\")
 	else:
-		animation.play(\"jump\") if jump_mode else animation.play(\"idle\")
+		if climb_up_ladder_mode:
+			climb_animation_timer += 1
+			if climb_animation_timer > 15:
+				$Sprite.flip_h = not $Sprite.flip_h
+				climb_animation_timer = 0
+		animation.play(\"climbing_idle\")
 
 func handle_climb_platform():
 	# handle ascending platform climbing
@@ -68,6 +91,33 @@ func handle_climb_platform():
 				position += Vector2(1,-1)
 			elif move_offset.x < 0:
 				position += Vector2(-1,-1)
+
+func handle_climb_ladder():	
+		
+	# stop climbing ladder and go to ground or next platform layer
+	if ladder_mode:		
+		for body in $ClimbLadderBottomHitBox.get_overlapping_bodies():
+			if body.name.begins_with(\"Platform\"):
+				ladder_mode = false 
+				return
+				
+		for body in $ClimbLadderTopHitBox.get_overlapping_bodies():
+			if body.name.begins_with(\"Platform\"):
+				ladder_mode = false
+				climb_up_ladder_mode = false
+				position.y -= 20
+	
+	
+	climb_up_ladder_mode = false
+	for area in $ClimbLadderBottomHitBox.get_overlapping_areas():
+		if area.name.begins_with(\"Ladder\") and Input.is_action_pressed(\"jump\"):
+			ladder_mode = true
+			climb_up_ladder_mode = true
+		if area.name.begins_with(\"Ladder\") and Input.is_action_pressed(\"down\"):
+			climb_up_ladder_mode = true
+			
+
+
 "
 
 [sub_resource type="RectangleShape2D" id=2]
@@ -77,7 +127,22 @@ extents = Vector2( 10, 8 )
 extents = Vector2( 61.5385, 10 )
 
 [sub_resource type="Animation" id=4]
-resource_name = "idle"
+resource_name = "climbing_idle"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 4 ]
+}
+
+[sub_resource type="Animation" id=5]
 length = 0.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -92,8 +157,7 @@ tracks/0/keys = {
 "values": [ 0, 0 ]
 }
 
-[sub_resource type="Animation" id=5]
-resource_name = "jump"
+[sub_resource type="Animation" id=6]
 length = 0.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -108,7 +172,7 @@ tracks/0/keys = {
 "values": [ 3, 0 ]
 }
 
-[sub_resource type="Animation" id=6]
+[sub_resource type="Animation" id=7]
 length = 0.3
 loop = true
 tracks/0/type = "value"
@@ -124,34 +188,11 @@ tracks/0/keys = {
 "values": [ 1, 2 ]
 }
 
-[sub_resource type="Animation" id=8]
-resource_name = "test"
-tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ 0 ]
-}
-tracks/1/type = "value"
-tracks/1/path = NodePath("Sprite:rotation_degrees")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/keys = {
-"times": PoolRealArray( 0, 1 ),
-"transitions": PoolRealArray( 1, 1 ),
-"update": 0,
-"values": [ 0.0, 28.4 ]
-}
+[sub_resource type="RectangleShape2D" id=8]
 
-[sub_resource type="RectangleShape2D" id=7]
+[sub_resource type="RectangleShape2D" id=9]
+
+[sub_resource type="RectangleShape2D" id=10]
 
 [node name="Player" type="KinematicBody2D"]
 script = SubResource( 1 )
@@ -159,16 +200,21 @@ script = SubResource( 1 )
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( -1, -8 )
 texture = ExtResource( 1 )
-hframes = 4
+vframes = 2
+hframes = 6
+frame = 4
 
 [node name="ObjectHitBox" type="Area2D" parent="."]
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ObjectHitBox"]
+visible = false
 position = Vector2( 0, -8 )
-scale = Vector2( 0.6, 1 )
+scale = Vector2( 0.6, 1.05 )
 shape = SubResource( 2 )
 
 [node name="ClimbPlatformHitBox" type="Area2D" parent="."]
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ClimbPlatformHitBox"]
 position = Vector2( 0, -1 )
@@ -176,12 +222,27 @@ scale = Vector2( 0.099, 0.1 )
 shape = SubResource( 3 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/idle = SubResource( 4 )
-anims/jump = SubResource( 5 )
-anims/running = SubResource( 6 )
-anims/test = SubResource( 8 )
+anims/climbing_idle = SubResource( 4 )
+anims/idle = SubResource( 5 )
+anims/jump = SubResource( 6 )
+anims/running = SubResource( 7 )
 
 [node name="PlatformCollisionShape" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2( 0, -1 )
 scale = Vector2( 0.5, 0.1 )
-shape = SubResource( 7 )
+shape = SubResource( 8 )
+
+[node name="ClimbLadderBottomHitBox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ClimbLadderBottomHitBox"]
+position = Vector2( 0, 5.96046e-08 )
+scale = Vector2( 0.2, 0.1 )
+shape = SubResource( 9 )
+
+[node name="ClimbLadderTopHitBox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ClimbLadderTopHitBox"]
+position = Vector2( 0, -16 )
+scale = Vector2( 0.2, 0.1 )
+shape = SubResource( 10 )
