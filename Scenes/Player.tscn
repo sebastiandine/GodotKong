@@ -15,9 +15,9 @@ const UP_VECTOR = Vector2(0,-1) #indicator, how the up direction is defined
 var move_offset = Vector2()
 
 var jump_mode = false
-var ladder_mode = false
-var climb_up_ladder_mode = false
 
+var is_connected_to_ladder = false
+var has_reached_top_ladder = false
 var climb_animation_timer = 0
 
 # Called when the node enters the scene tree for the first time.
@@ -27,17 +27,18 @@ func _ready():
 func _process(delta):
 	move_offset.x = 0
 	
-	if ladder_mode:
+	if is_connected_to_ladder:
 		move_offset.y = 0
 	else:
 		move_offset.y += GRAVITY * delta # make fall faster the longer the fall
 	
 	if jump_mode and is_on_floor():
 		jump_mode = false
-		
+	
 	check_key_input()
 	handle_climb_platform()
 	handle_climb_ladder()
+
 	
 	move_offset = move_and_slide(move_offset, UP_VECTOR)
 	
@@ -47,7 +48,7 @@ func _process(delta):
 
 func check_key_input():
 	
-	if not ladder_mode:
+	if not is_connected_to_ladder:
 		if Input.is_action_pressed(\"left\") and position.x > 8:
 			move_offset.x = -1 * SPEED
 		
@@ -58,15 +59,16 @@ func check_key_input():
 			move_offset.y = -JUMP_POWER
 			jump_mode = true
 	else:
-		if Input.is_action_pressed(\"jump\") and climb_up_ladder_mode:
+		if Input.is_action_pressed(\"jump\"):
 			move_offset.y = -5
 		if Input.is_action_pressed(\"down\"):
 			move_offset.y = 5
 
 
 func set_animation():
-	# set animation and image flipping according to moveOffset
-	if not ladder_mode:
+
+	if not is_connected_to_ladder:
+		# normal movement animation
 		if move_offset.x > 0:
 			$Sprite.flip_h = false
 			animation.play(\"jump\") if jump_mode else animation.play(\"running\")
@@ -76,12 +78,31 @@ func set_animation():
 		else:
 			animation.play(\"jump\") if jump_mode else animation.play(\"idle\")
 	else:
-		if climb_up_ladder_mode:
-			climb_animation_timer += 1
-			if climb_animation_timer > 15:
-				$Sprite.flip_h = not $Sprite.flip_h
-				climb_animation_timer = 0
-		animation.play(\"climbing_idle\")
+		# climbing animation
+		if move_offset.y != 0:
+			# normal climbing animation
+			if not has_reached_top_ladder:
+				climb_animation_timer += 1
+				if climb_animation_timer > 15:
+					$Sprite.flip_h = not $Sprite.flip_h
+					climb_animation_timer = 0
+				animation.play(\"climbing_idle\")
+			
+			else:
+				if $Sprite.frame == 4: #check if this is the start of the animation
+					climb_animation_timer = 0
+					$Sprite.frame = 5
+				else:
+					if climb_animation_timer > 15 and climb_animation_timer <= 30:
+						$Sprite.frame = 6
+					elif climb_animation_timer == 45:
+						$Sprite.frame = 7
+						position.y -= 5
+					elif climb_animation_timer > 60:
+						is_connected_to_ladder = false
+						has_reached_top_ladder = false
+						climb_animation_timer = 0
+					climb_animation_timer += 1
 
 func handle_climb_platform():
 	# handle ascending platform climbing
@@ -94,27 +115,33 @@ func handle_climb_platform():
 
 func handle_climb_ladder():	
 		
-	# stop climbing ladder and go to ground or next platform layer
-	if ladder_mode:		
+	if is_connected_to_ladder:		
+		# stop climbing ladder and go to ground
 		for body in $ClimbLadderBottomHitBox.get_overlapping_bodies():
-			if body.name.begins_with(\"Platform\"):
-				ladder_mode = false 
+			if body.name.begins_with(\"Platform\") and Input.is_action_pressed(\"down\"):
+				is_connected_to_ladder = false 
 				return
-				
+		
+		# stop climbing ladder and go to next level platform
 		for body in $ClimbLadderTopHitBox.get_overlapping_bodies():
 			if body.name.begins_with(\"Platform\"):
-				ladder_mode = false
-				climb_up_ladder_mode = false
-				position.y -= 20
-	
-	
-	climb_up_ladder_mode = false
-	for area in $ClimbLadderBottomHitBox.get_overlapping_areas():
-		if area.name.begins_with(\"Ladder\") and Input.is_action_pressed(\"jump\"):
-			ladder_mode = true
-			climb_up_ladder_mode = true
-		if area.name.begins_with(\"Ladder\") and Input.is_action_pressed(\"down\"):
-			climb_up_ladder_mode = true
+				has_reached_top_ladder = true
+				#is_connected_to_ladder = false
+				#position.y -= 20
+				return
+		
+		# refuse climbing if no ladder element is found (broken ladders)
+		for area in $ClimbLadderTopHitBox.get_overlapping_areas():
+			if area.name.begins_with(\"Ladder\"):
+				return
+		position.y += 1
+		
+		
+	else:
+		# check if Player can be connected to a ladder	
+		for area in $ClimbLadderBottomHitBox.get_overlapping_areas():
+			if area.name.begins_with(\"Ladder\") and Input.is_action_pressed(\"jump\") and is_on_floor():
+				is_connected_to_ladder = true
 			
 
 
@@ -243,6 +270,6 @@ shape = SubResource( 9 )
 [node name="ClimbLadderTopHitBox" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ClimbLadderTopHitBox"]
-position = Vector2( 0, -16 )
+position = Vector2( 0, -6 )
 scale = Vector2( 0.2, 0.1 )
 shape = SubResource( 10 )
