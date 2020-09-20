@@ -101,9 +101,7 @@ func set_animation():
 				self.set_process(true)
 			
 			if has_reached_top_ladder and move_offset.y > 0:
-				print(\"test\")
 				self.set_process(false)
-				position.y += 9
 				animation.play_backwards(\"climbing_platform_edge_up\")
 				yield(animation, \"animation_finished\")
 				has_reached_top_ladder = false
@@ -130,10 +128,9 @@ func handle_climb_ladder():
 				return
 		
 		# stop climbing ladder and go to next level platform
-		for body in $ClimbLadderTopHitBox.get_overlapping_bodies():
-			if body.name.begins_with(\"Platform\"):
+		for area in $ClimbLadderTopHitBox.get_overlapping_areas() :
+			if area.name == \"LadderTop\" and Input.is_action_pressed(\"jump\"):
 				has_reached_top_ladder = true
-				position.y -= 2 #small adjustment for pixel perfect animation
 				return
 		
 		# refuse climbing if no ladder element is found (broken ladders)
@@ -150,6 +147,9 @@ func handle_climb_ladder():
 				is_connected_to_ladder = true
 			
 			if area.name == \"LadderTop\" and Input.is_action_pressed(\"down\") and is_on_floor():
+
+				position.y += 9
+				$Sprite.frame = 6
 				has_reached_top_ladder = true
 				is_connected_to_ladder = true
 			
@@ -297,6 +297,6 @@ shape = SubResource( 10 )
 [node name="ClimbLadderTopHitBox" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ClimbLadderTopHitBox"]
-position = Vector2( 0, -8 )
+position = Vector2( 0, -6 )
 scale = Vector2( 0.2, 0.1 )
 shape = SubResource( 11 )

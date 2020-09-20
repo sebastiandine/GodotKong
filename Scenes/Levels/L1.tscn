@@ -34,6 +34,16 @@ position = Vector2( 116, 118 )
 position = Vector2( 116, 110 )
 is_top = true
 
+[node name="Ladder8" parent="Ladders" instance=ExtResource( 3 )]
+position = Vector2( 200, 137 )
+is_top = true
+
+[node name="Ladder9" parent="Ladders" instance=ExtResource( 3 )]
+position = Vector2( 200, 145 )
+
+[node name="Ladder10" parent="Ladders" instance=ExtResource( 3 )]
+position = Vector2( 200, 153 )
+
 [node name="Platforms" type="Node2D" parent="."]
 
 [node name="Level1" type="Node2D" parent="Platforms"]
