@@ -18,6 +18,7 @@ var jump_mode = false
 
 var is_connected_to_ladder = false
 var has_reached_top_ladder = false
+
 var climb_animation_timer = 0
 
 # Called when the node enters the scene tree for the first time.
@@ -76,7 +77,8 @@ func set_animation():
 			$Sprite.flip_h = true
 			animation.play(\"jump\") if jump_mode else animation.play(\"running\")
 		else:
-			animation.play(\"jump\") if jump_mode else animation.play(\"idle\")
+			if not $Sprite.frame == 7:
+				animation.play(\"jump\") if jump_mode else animation.play(\"idle\")
 	else:
 		# climbing animation
 		if move_offset.y != 0:
@@ -93,15 +95,17 @@ func set_animation():
 					climb_animation_timer = 0
 					$Sprite.frame = 5
 				else:
-					if climb_animation_timer > 15 and climb_animation_timer <= 30:
+					if climb_animation_timer > 10 and climb_animation_timer <= 20:
 						$Sprite.frame = 6
-					elif climb_animation_timer == 45:
+					elif climb_animation_timer >= 20 and climb_animation_timer <= 30:
+						if $Sprite.frame == 6:
+							position.y -= 8
 						$Sprite.frame = 7
-						position.y -= 5
-					elif climb_animation_timer > 60:
+					elif climb_animation_timer > 40:
 						is_connected_to_ladder = false
 						has_reached_top_ladder = false
 						climb_animation_timer = 0
+						return
 					climb_animation_timer += 1
 
 func handle_climb_platform():
@@ -114,6 +118,7 @@ func handle_climb_platform():
 				position += Vector2(-1,-1)
 
 func handle_climb_ladder():	
+
 		
 	if is_connected_to_ladder:		
 		# stop climbing ladder and go to ground
@@ -126,12 +131,10 @@ func handle_climb_ladder():
 		for body in $ClimbLadderTopHitBox.get_overlapping_bodies():
 			if body.name.begins_with(\"Platform\"):
 				has_reached_top_ladder = true
-				#is_connected_to_ladder = false
-				#position.y -= 20
 				return
 		
 		# refuse climbing if no ladder element is found (broken ladders)
-		for area in $ClimbLadderTopHitBox.get_overlapping_areas():
+		for area in $ClimbLadderBottomHitBox.get_overlapping_areas():
 			if area.name.begins_with(\"Ladder\"):
 				return
 		position.y += 1
@@ -270,6 +273,6 @@ shape = SubResource( 9 )
 [node name="ClimbLadderTopHitBox" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ClimbLadderTopHitBox"]
-position = Vector2( 0, -6 )
+position = Vector2( 0, -8 )
 scale = Vector2( 0.2, 0.1 )
 shape = SubResource( 10 )
