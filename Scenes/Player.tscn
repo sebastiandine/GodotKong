@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Assets/jumpman.png" type="Texture" id=1]
 
@@ -90,23 +90,25 @@ func set_animation():
 					climb_animation_timer = 0
 				animation.play(\"climbing_idle\")
 			
-			else:
-				if $Sprite.frame == 4: #check if this is the start of the animation
-					climb_animation_timer = 0
-					$Sprite.frame = 5
-				else:
-					if climb_animation_timer > 10 and climb_animation_timer <= 20:
-						$Sprite.frame = 6
-					elif climb_animation_timer >= 20 and climb_animation_timer <= 30:
-						if $Sprite.frame == 6:
-							position.y -= 8
-						$Sprite.frame = 7
-					elif climb_animation_timer > 40:
-						is_connected_to_ladder = false
-						has_reached_top_ladder = false
-						climb_animation_timer = 0
-						return
-					climb_animation_timer += 1
+			if has_reached_top_ladder and move_offset.y < 0:
+				self.set_process(false)
+				animation.play(\"climbing_platform_edge_up\")
+				yield(animation, \"animation_finished\")
+				position.y -= 9
+				$Sprite.frame = 7
+				is_connected_to_ladder = false
+				has_reached_top_ladder = false
+				self.set_process(true)
+			
+			if has_reached_top_ladder and move_offset.y > 0:
+				print(\"test\")
+				self.set_process(false)
+				position.y += 9
+				animation.play_backwards(\"climbing_platform_edge_up\")
+				yield(animation, \"animation_finished\")
+				has_reached_top_ladder = false
+				self.set_process(true)
+
 
 func handle_climb_platform():
 	# handle ascending platform climbing
@@ -131,6 +133,7 @@ func handle_climb_ladder():
 		for body in $ClimbLadderTopHitBox.get_overlapping_bodies():
 			if body.name.begins_with(\"Platform\"):
 				has_reached_top_ladder = true
+				position.y -= 2 #small adjustment for pixel perfect animation
 				return
 		
 		# refuse climbing if no ladder element is found (broken ladders)
@@ -143,7 +146,11 @@ func handle_climb_ladder():
 	else:
 		# check if Player can be connected to a ladder	
 		for area in $ClimbLadderBottomHitBox.get_overlapping_areas():
-			if area.name.begins_with(\"Ladder\") and Input.is_action_pressed(\"jump\") and is_on_floor():
+			if area.name == \"LadderBottom\" and Input.is_action_pressed(\"jump\") and is_on_floor():
+				is_connected_to_ladder = true
+			
+			if area.name == \"LadderTop\" and Input.is_action_pressed(\"down\") and is_on_floor():
+				has_reached_top_ladder = true
 				is_connected_to_ladder = true
 			
 
@@ -173,7 +180,8 @@ tracks/0/keys = {
 }
 
 [sub_resource type="Animation" id=5]
-length = 0.5
+resource_name = "climbing_platform_edge_up"
+length = 0.6
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -181,10 +189,10 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5 ),
+"times": PoolRealArray( 0, 0.3 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
-"values": [ 0, 0 ]
+"values": [ 5, 6 ]
 }
 
 [sub_resource type="Animation" id=6]
@@ -199,10 +207,25 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.5 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
-"values": [ 3, 0 ]
+"values": [ 0, 0 ]
 }
 
 [sub_resource type="Animation" id=7]
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 3, 0 ]
+}
+
+[sub_resource type="Animation" id=8]
 length = 0.3
 loop = true
 tracks/0/type = "value"
@@ -218,11 +241,11 @@ tracks/0/keys = {
 "values": [ 1, 2 ]
 }
 
-[sub_resource type="RectangleShape2D" id=8]
-
 [sub_resource type="RectangleShape2D" id=9]
 
 [sub_resource type="RectangleShape2D" id=10]
+
+[sub_resource type="RectangleShape2D" id=11]
 
 [node name="Player" type="KinematicBody2D"]
 script = SubResource( 1 )
@@ -232,7 +255,7 @@ position = Vector2( -1, -8 )
 texture = ExtResource( 1 )
 vframes = 2
 hframes = 6
-frame = 4
+frame = 7
 
 [node name="ObjectHitBox" type="Area2D" parent="."]
 visible = false
@@ -253,26 +276,27 @@ shape = SubResource( 3 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/climbing_idle = SubResource( 4 )
-anims/idle = SubResource( 5 )
-anims/jump = SubResource( 6 )
-anims/running = SubResource( 7 )
+anims/climbing_platform_edge_up = SubResource( 5 )
+anims/idle = SubResource( 6 )
+anims/jump = SubResource( 7 )
+anims/running = SubResource( 8 )
 
 [node name="PlatformCollisionShape" type="CollisionShape2D" parent="."]
 visible = false
 position = Vector2( 0, -1 )
 scale = Vector2( 0.5, 0.1 )
-shape = SubResource( 8 )
+shape = SubResource( 9 )
 
 [node name="ClimbLadderBottomHitBox" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ClimbLadderBottomHitBox"]
 position = Vector2( 0, 5.96046e-08 )
 scale = Vector2( 0.2, 0.1 )
-shape = SubResource( 9 )
+shape = SubResource( 10 )
 
 [node name="ClimbLadderTopHitBox" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ClimbLadderTopHitBox"]
 position = Vector2( 0, -8 )
 scale = Vector2( 0.2, 0.1 )
-shape = SubResource( 10 )
+shape = SubResource( 11 )

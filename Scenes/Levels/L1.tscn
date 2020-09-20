@@ -10,24 +10,29 @@
 
 [node name="Ladder" parent="Ladders" instance=ExtResource( 3 )]
 position = Vector2( 176, 132 )
+is_bottom = true
 
 [node name="Ladder2" parent="Ladders" instance=ExtResource( 3 )]
 position = Vector2( 136, 133 )
+is_bottom = true
 
 [node name="Ladder3" parent="Ladders" instance=ExtResource( 3 )]
 position = Vector2( 136, 115 )
+is_top = true
 
 [node name="Ladder5" parent="Ladders" instance=ExtResource( 3 )]
 position = Vector2( 116, 126 )
 
 [node name="Ladder4" parent="Ladders" instance=ExtResource( 3 )]
 position = Vector2( 116, 134 )
+is_bottom = true
 
 [node name="Ladder6" parent="Ladders" instance=ExtResource( 3 )]
 position = Vector2( 116, 118 )
 
-[node name="Ladder" parent="Ladders/Ladder6" instance=ExtResource( 3 )]
-position = Vector2( 0, -8 )
+[node name="Ladder7" parent="Ladders" instance=ExtResource( 3 )]
+position = Vector2( 116, 110 )
+is_top = true
 
 [node name="Platforms" type="Node2D" parent="."]
 
