@@ -1,48 +1,206 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Scenes/PlatformElement.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scenes/Player.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scenes/Ladder.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Assets/barrel.png" type="Texture" id=5]
 
 [node name="L1" type="Node2D"]
 
 [node name="Ladders" type="Node2D" parent="."]
 
-[node name="Ladder" parent="Ladders" instance=ExtResource( 3 )]
-position = Vector2( 176, 132 )
+[node name="Level1" type="Node2D" parent="Ladders"]
+
+[node name="Ladder" parent="Ladders/Level1" instance=ExtResource( 3 )]
+position = Vector2( 84, 283 )
 is_bottom = true
 
-[node name="Ladder2" parent="Ladders" instance=ExtResource( 3 )]
-position = Vector2( 136, 133 )
+[node name="Ladder2" parent="Ladders/Level1" instance=ExtResource( 3 )]
+position = Vector2( 84, 255 )
+
+[node name="Ladder3" parent="Ladders/Level1" instance=ExtResource( 3 )]
+position = Vector2( 185, 279 )
 is_bottom = true
 
-[node name="Ladder3" parent="Ladders" instance=ExtResource( 3 )]
-position = Vector2( 136, 115 )
+[node name="Ladder4" parent="Ladders/Level1" instance=ExtResource( 3 )]
+position = Vector2( 185, 271 )
+
+[node name="Ladder5" parent="Ladders/Level1" instance=ExtResource( 3 )]
+position = Vector2( 185, 263 )
+
+[node name="Ladder6" parent="Ladders/Level1" instance=ExtResource( 3 )]
+position = Vector2( 185, 260 )
 is_top = true
 
-[node name="Ladder5" parent="Ladders" instance=ExtResource( 3 )]
-position = Vector2( 116, 126 )
+[node name="Level2" type="Node2D" parent="Ladders"]
 
-[node name="Ladder4" parent="Ladders" instance=ExtResource( 3 )]
-position = Vector2( 116, 134 )
+[node name="Ladder4" parent="Ladders/Level2" instance=ExtResource( 3 )]
+position = Vector2( 104, 223 )
+
+[node name="Ladder3" parent="Ladders/Level2" instance=ExtResource( 3 )]
+position = Vector2( 104, 231 )
+
+[node name="Ladder" parent="Ladders/Level2" instance=ExtResource( 3 )]
+position = Vector2( 104, 247 )
 is_bottom = true
 
-[node name="Ladder6" parent="Ladders" instance=ExtResource( 3 )]
-position = Vector2( 116, 118 )
+[node name="Ladder2" parent="Ladders/Level2" instance=ExtResource( 3 )]
+position = Vector2( 104, 239 )
 
-[node name="Ladder7" parent="Ladders" instance=ExtResource( 3 )]
-position = Vector2( 116, 110 )
+[node name="Ladder5" parent="Ladders/Level2" instance=ExtResource( 3 )]
+position = Vector2( 104, 219 )
 is_top = true
 
-[node name="Ladder8" parent="Ladders" instance=ExtResource( 3 )]
-position = Vector2( 200, 139 )
+[node name="Ladder6" parent="Ladders/Level2" instance=ExtResource( 3 )]
+position = Vector2( 40, 243 )
+is_bottom = true
+
+[node name="Ladder7" parent="Ladders/Level2" instance=ExtResource( 3 )]
+position = Vector2( 40, 235 )
+
+[node name="Ladder8" parent="Ladders/Level2" instance=ExtResource( 3 )]
+position = Vector2( 40, 227 )
+
+[node name="Ladder9" parent="Ladders/Level2" instance=ExtResource( 3 )]
+position = Vector2( 40, 223 )
 is_top = true
 
-[node name="Ladder9" parent="Ladders" instance=ExtResource( 3 )]
-position = Vector2( 200, 147 )
+[node name="Level3" type="Node2D" parent="Ladders"]
 
-[node name="Ladder10" parent="Ladders" instance=ExtResource( 3 )]
-position = Vector2( 200, 155 )
+[node name="Ladder4" parent="Ladders/Level3" instance=ExtResource( 3 )]
+position = Vector2( 119, 182 )
+is_top = true
+
+[node name="Ladder5" parent="Ladders/Level3" instance=ExtResource( 3 )]
+position = Vector2( 119, 200 )
+
+[node name="Ladder6" parent="Ladders/Level3" instance=ExtResource( 3 )]
+position = Vector2( 119, 192 )
+
+[node name="Ladder7" parent="Ladders/Level3" instance=ExtResource( 3 )]
+position = Vector2( 119, 184 )
+
+[node name="Ladder3" parent="Ladders/Level3" instance=ExtResource( 3 )]
+position = Vector2( 68, 183 )
+
+[node name="Ladder" parent="Ladders/Level3" instance=ExtResource( 3 )]
+position = Vector2( 68, 211 )
+is_bottom = true
+
+[node name="Ladder9" parent="Ladders/Level3" instance=ExtResource( 3 )]
+position = Vector2( 184, 196 )
+
+[node name="Ladder2" parent="Ladders/Level3" instance=ExtResource( 3 )]
+position = Vector2( 119, 208 )
+is_bottom = true
+
+[node name="Ladder10" parent="Ladders/Level3" instance=ExtResource( 3 )]
+position = Vector2( 184, 186 )
+is_top = true
+
+[node name="Ladder11" parent="Ladders/Level3" instance=ExtResource( 3 )]
+position = Vector2( 184, 188 )
+
+[node name="Ladder8" parent="Ladders/Level3" instance=ExtResource( 3 )]
+position = Vector2( 184, 204 )
+is_bottom = true
+
+[node name="Level4" type="Node2D" parent="Ladders"]
+
+[node name="Ladder9" parent="Ladders/Level4" instance=ExtResource( 3 )]
+position = Vector2( 40, 151 )
+
+[node name="Ladder4" parent="Ladders/Level4" instance=ExtResource( 3 )]
+position = Vector2( 73, 163 )
+
+[node name="Ladder" parent="Ladders/Level4" instance=ExtResource( 3 )]
+position = Vector2( 168, 175 )
+is_bottom = true
+
+[node name="Ladder2" parent="Ladders/Level4" instance=ExtResource( 3 )]
+position = Vector2( 168, 147 )
+
+[node name="Ladder3" parent="Ladders/Level4" instance=ExtResource( 3 )]
+position = Vector2( 73, 171 )
+is_bottom = true
+
+[node name="Ladder5" parent="Ladders/Level4" instance=ExtResource( 3 )]
+position = Vector2( 73, 155 )
+
+[node name="Ladder6" parent="Ladders/Level4" instance=ExtResource( 3 )]
+position = Vector2( 73, 147 )
+is_top = true
+
+[node name="Ladder7" parent="Ladders/Level4" instance=ExtResource( 3 )]
+position = Vector2( 40, 167 )
+is_bottom = true
+
+[node name="Ladder8" parent="Ladders/Level4" instance=ExtResource( 3 )]
+position = Vector2( 40, 159 )
+
+[node name="Ladder10" parent="Ladders/Level4" instance=ExtResource( 3 )]
+position = Vector2( 40, 149 )
+is_top = true
+
+[node name="Level5" type="Node2D" parent="Ladders"]
+
+[node name="Ladder6" parent="Ladders/Level5" instance=ExtResource( 3 )]
+position = Vector2( 184, 115 )
+
+[node name="Ladder5" parent="Ladders/Level5" instance=ExtResource( 3 )]
+position = Vector2( 184, 123 )
+
+[node name="Ladder" parent="Ladders/Level5" instance=ExtResource( 3 )]
+position = Vector2( 104, 135 )
+is_bottom = true
+
+[node name="Ladder2" parent="Ladders/Level5" instance=ExtResource( 3 )]
+position = Vector2( 104, 131 )
+
+[node name="Ladder3" parent="Ladders/Level5" instance=ExtResource( 3 )]
+position = Vector2( 104, 112 )
+
+[node name="Ladder4" parent="Ladders/Level5" instance=ExtResource( 3 )]
+position = Vector2( 184, 131 )
+is_bottom = true
+
+[node name="Ladder7" parent="Ladders/Level5" instance=ExtResource( 3 )]
+position = Vector2( 184, 112 )
+is_top = true
+
+[node name="Barrels" type="Node2D" parent="."]
+
+[node name="Sprite" type="Sprite" parent="Barrels"]
+position = Vector2( 5, 96 )
+rotation = 1.5708
+texture = ExtResource( 5 )
+vframes = 2
+hframes = 5
+frame = 5
+
+[node name="Sprite2" type="Sprite" parent="Barrels"]
+position = Vector2( 15, 96 )
+rotation = 1.5708
+texture = ExtResource( 5 )
+vframes = 2
+hframes = 5
+frame = 5
+
+[node name="Sprite3" type="Sprite" parent="Barrels"]
+position = Vector2( 5, 81 )
+rotation = 1.5708
+texture = ExtResource( 5 )
+vframes = 2
+hframes = 5
+frame = 5
+
+[node name="Sprite4" type="Sprite" parent="Barrels"]
+position = Vector2( 15, 81 )
+rotation = 1.5708
+texture = ExtResource( 5 )
+vframes = 2
+hframes = 5
+frame = 5
 
 [node name="Platforms" type="Node2D" parent="."]
 
@@ -296,4 +454,4 @@ position = Vector2( 104, 112 )
 position = Vector2( 136, 112 )
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
-position = Vector2( 216, 128 )
+position = Vector2( 120, 274 )

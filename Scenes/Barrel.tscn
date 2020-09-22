@@ -37,11 +37,17 @@ func _process(delta):
 		move_offset.y += GRAVITY * delta # make fall faster the longer the fall
 
 	move_and_slide_with_snap(move_offset, Vector2(0,1), UP_VECTOR)
+	
+	for i in get_slide_count():
+		var collision = get_slide_collision(i)
+		print(collision.collider.name)
+		if collision.collider.name == \"LadderTop\":
+			position.y += 10
+
 
 func check_destroy():
 	if floor(position.x) == 8 and position.y > 280:
 		 queue_free()
-	
 "
 
 [sub_resource type="CircleShape2D" id=2]
