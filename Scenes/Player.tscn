@@ -15,7 +15,7 @@ const JUMP_POWER = 70
 # indicator, how the up direction is defined 
 const UP_VECTOR = Vector2(0,-1) 
 
-var move_offset = Vector2()
+var velocity = Vector2()
 
 var jump_mode = false
 
@@ -28,12 +28,12 @@ func _ready():
 	pass # Replace with function body.
 
 func _process(delta):
-	move_offset.x = 0
+	velocity.x = 0
 	
 	if is_connected_to_ladder:
-		move_offset.y = 0
+		velocity.y = 0
 	else:
-		move_offset.y += GRAVITY * delta # make fall faster the longer the fall
+		velocity.y += GRAVITY * delta # make fall faster the longer the fall
 	
 	if jump_mode and is_on_floor():
 		jump_mode = false
@@ -42,7 +42,7 @@ func _process(delta):
 	handle_climb_platform()
 	handle_climb_ladder()
 
-	move_offset = move_and_slide(move_offset, UP_VECTOR)
+	velocity = move_and_slide(velocity, UP_VECTOR)
 	
 	if is_connected_to_ladder:
 		ladder_animation()
@@ -55,27 +55,27 @@ func check_key_input():
 	
 	if not is_connected_to_ladder:
 		if Input.is_action_pressed(\"left\") and position.x > 8:
-			move_offset.x = -1 * SPEED
+			velocity.x = -1 * SPEED
 		
 		if Input.is_action_pressed(\"right\") and position.x < 216:
-			move_offset.x = 1 * SPEED
+			velocity.x = 1 * SPEED
 		
 		if Input.is_action_just_pressed(\"jump\") and is_on_floor():
-			move_offset.y = -JUMP_POWER
+			velocity.y = -JUMP_POWER
 			jump_mode = true
 	else:
 		if Input.is_action_pressed(\"jump\"):
-			move_offset.y = -1 * LADDER_SPEED
+			velocity.y = -1 * LADDER_SPEED
 		if Input.is_action_pressed(\"down\"):
-			move_offset.y = 1 * LADDER_SPEED
+			velocity.y = 1 * LADDER_SPEED
 
 
 func standard_animation():
 	
-	if move_offset.x > 0:
+	if velocity.x > 0:
 		$Sprite.flip_h = false
 		animation.play(\"jump\") if jump_mode else animation.play(\"running\")
-	elif move_offset.x < 0:
+	elif velocity.x < 0:
 		$Sprite.flip_h = true
 		animation.play(\"jump\") if jump_mode else animation.play(\"running\")
 	else:
@@ -85,15 +85,15 @@ func standard_animation():
 
 func ladder_animation():
 	
-	if move_offset.y == 0:
+	if velocity.y == 0:
 		animation.stop()
 		
-	if move_offset.y != 0:
+	if velocity.y != 0:
 		# normal climbing
 		if not has_reached_top_ladder:
 			animation.play(\"climbing\")
 
-		if has_reached_top_ladder and move_offset.y < 0:
+		if has_reached_top_ladder and velocity.y < 0:
 			self.set_process(false)
 			animation.play(\"climbing_platform_edge_up\")
 			yield(animation, \"animation_finished\")
@@ -103,7 +103,7 @@ func ladder_animation():
 			has_reached_top_ladder = false
 			self.set_process(true)
 		
-		if has_reached_top_ladder and move_offset.y > 0:
+		if has_reached_top_ladder and velocity.y > 0:
 			self.set_process(false)
 			animation.play_backwards(\"climbing_platform_edge_up\")
 			yield(animation, \"animation_finished\")
@@ -115,9 +115,9 @@ func handle_climb_platform():
 	# handle ascending platform climbing
 	for body in $ClimbPlatformHitBox.get_overlapping_bodies():
 		if body.name.begins_with(\"Platform\"):
-			if move_offset.x > 0:
+			if velocity.x > 0:
 				position += Vector2(1,-1)
-			elif move_offset.x < 0:
+			elif velocity.x < 0:
 				position += Vector2(-1,-1)
 
 
@@ -275,6 +275,7 @@ script = SubResource( 1 )
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( -1, -8 )
 texture = ExtResource( 1 )
+flip_h = true
 vframes = 2
 hframes = 6
 frame = 4

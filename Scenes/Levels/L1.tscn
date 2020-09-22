@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Scenes/PlatformElement.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scenes/Player.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scenes/Ladder.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Scenes/Barrel.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Assets/barrel.png" type="Texture" id=5]
 
 [node name="L1" type="Node2D"]
@@ -168,9 +169,9 @@ is_bottom = true
 position = Vector2( 184, 112 )
 is_top = true
 
-[node name="Barrels" type="Node2D" parent="."]
+[node name="Decoration" type="Node2D" parent="."]
 
-[node name="Sprite" type="Sprite" parent="Barrels"]
+[node name="Sprite" type="Sprite" parent="Decoration"]
 position = Vector2( 5, 96 )
 rotation = 1.5708
 texture = ExtResource( 5 )
@@ -178,7 +179,7 @@ vframes = 2
 hframes = 5
 frame = 5
 
-[node name="Sprite2" type="Sprite" parent="Barrels"]
+[node name="Sprite2" type="Sprite" parent="Decoration"]
 position = Vector2( 15, 96 )
 rotation = 1.5708
 texture = ExtResource( 5 )
@@ -186,7 +187,7 @@ vframes = 2
 hframes = 5
 frame = 5
 
-[node name="Sprite3" type="Sprite" parent="Barrels"]
+[node name="Sprite3" type="Sprite" parent="Decoration"]
 position = Vector2( 5, 81 )
 rotation = 1.5708
 texture = ExtResource( 5 )
@@ -194,7 +195,7 @@ vframes = 2
 hframes = 5
 frame = 5
 
-[node name="Sprite4" type="Sprite" parent="Barrels"]
+[node name="Sprite4" type="Sprite" parent="Decoration"]
 position = Vector2( 15, 81 )
 rotation = 1.5708
 texture = ExtResource( 5 )
@@ -455,3 +456,14 @@ position = Vector2( 136, 112 )
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
 position = Vector2( 120, 274 )
+
+[node name="Node" type="Node" parent="."]
+
+[node name="Barrel" parent="Node" instance=ExtResource( 4 )]
+position = Vector2( 152, 230 )
+
+[node name="Barrel2" parent="Node" instance=ExtResource( 4 )]
+position = Vector2( 111, 169 )
+
+[node name="Barrel3" parent="Node" instance=ExtResource( 4 )]
+position = Vector2( 77, 96 )
