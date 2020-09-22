@@ -8,9 +8,12 @@ script/source = "extends KinematicBody2D
 onready var animation = $AnimationPlayer
 
 const SPEED = 60
+const LADDER_SPEED = 10
 const GRAVITY = 200
 const JUMP_POWER = 70
-const UP_VECTOR = Vector2(0,-1) #indicator, how the up direction is defined 
+
+# indicator, how the up direction is defined 
+const UP_VECTOR = Vector2(0,-1) 
 
 var move_offset = Vector2()
 
@@ -19,7 +22,6 @@ var jump_mode = false
 var is_connected_to_ladder = false
 var has_reached_top_ladder = false
 
-var climb_animation_timer = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -40,10 +42,12 @@ func _process(delta):
 	handle_climb_platform()
 	handle_climb_ladder()
 
-	
 	move_offset = move_and_slide(move_offset, UP_VECTOR)
 	
-	set_animation()
+	if is_connected_to_ladder:
+		ladder_animation()
+	else: 
+		standard_animation()
 
 
 
@@ -61,51 +65,50 @@ func check_key_input():
 			jump_mode = true
 	else:
 		if Input.is_action_pressed(\"jump\"):
-			move_offset.y = -5
+			move_offset.y = -1 * LADDER_SPEED
 		if Input.is_action_pressed(\"down\"):
-			move_offset.y = 5
+			move_offset.y = 1 * LADDER_SPEED
 
 
-func set_animation():
-
-	if not is_connected_to_ladder:
-		# normal movement animation
-		if move_offset.x > 0:
-			$Sprite.flip_h = false
-			animation.play(\"jump\") if jump_mode else animation.play(\"running\")
-		elif move_offset.x < 0:
-			$Sprite.flip_h = true
-			animation.play(\"jump\") if jump_mode else animation.play(\"running\")
-		else:
-			if not $Sprite.frame == 7:
-				animation.play(\"jump\") if jump_mode else animation.play(\"idle\")
+func standard_animation():
+	
+	if move_offset.x > 0:
+		$Sprite.flip_h = false
+		animation.play(\"jump\") if jump_mode else animation.play(\"running\")
+	elif move_offset.x < 0:
+		$Sprite.flip_h = true
+		animation.play(\"jump\") if jump_mode else animation.play(\"running\")
 	else:
-		# climbing animation
-		if move_offset.y != 0:
-			# normal climbing animation
-			if not has_reached_top_ladder:
-				climb_animation_timer += 1
-				if climb_animation_timer > 15:
-					$Sprite.flip_h = not $Sprite.flip_h
-					climb_animation_timer = 0
-				animation.play(\"climbing_idle\")
-			
-			if has_reached_top_ladder and move_offset.y < 0:
-				self.set_process(false)
-				animation.play(\"climbing_platform_edge_up\")
-				yield(animation, \"animation_finished\")
-				position.y -= 9
-				$Sprite.frame = 7
-				is_connected_to_ladder = false
-				has_reached_top_ladder = false
-				self.set_process(true)
-			
-			if has_reached_top_ladder and move_offset.y > 0:
-				self.set_process(false)
-				animation.play_backwards(\"climbing_platform_edge_up\")
-				yield(animation, \"animation_finished\")
-				has_reached_top_ladder = false
-				self.set_process(true)
+		if not $Sprite.frame == 7:
+			animation.play(\"jump\") if jump_mode else animation.play(\"idle\")
+
+
+func ladder_animation():
+	
+	if move_offset.y == 0:
+		animation.stop()
+		
+	if move_offset.y != 0:
+		# normal climbing
+		if not has_reached_top_ladder:
+			animation.play(\"climbing\")
+
+		if has_reached_top_ladder and move_offset.y < 0:
+			self.set_process(false)
+			animation.play(\"climbing_platform_edge_up\")
+			yield(animation, \"animation_finished\")
+			position.y -= 9
+			$Sprite.frame = 7
+			is_connected_to_ladder = false
+			has_reached_top_ladder = false
+			self.set_process(true)
+		
+		if has_reached_top_ladder and move_offset.y > 0:
+			self.set_process(false)
+			animation.play_backwards(\"climbing_platform_edge_up\")
+			yield(animation, \"animation_finished\")
+			has_reached_top_ladder = false
+			self.set_process(true)
 
 
 func handle_climb_platform():
@@ -117,17 +120,20 @@ func handle_climb_platform():
 			elif move_offset.x < 0:
 				position += Vector2(-1,-1)
 
-func handle_climb_ladder():	
 
-		
+func handle_climb_ladder():
+	# handle climbing up and down a ladder
+
+	# action, when already conntected to a ladder
 	if is_connected_to_ladder:		
-		# stop climbing ladder and go to ground
+		
+		# stop climbing ladder (down) and go to ground
 		for body in $ClimbLadderBottomHitBox.get_overlapping_bodies():
 			if body.name.begins_with(\"Platform\") and Input.is_action_pressed(\"down\"):
 				is_connected_to_ladder = false 
 				return
 		
-		# stop climbing ladder and go to next level platform
+		# stop climbing ladder (up) and go to next level platform
 		for area in $ClimbLadderTopHitBox.get_overlapping_areas() :
 			if area.name == \"LadderTop\" and Input.is_action_pressed(\"jump\"):
 				has_reached_top_ladder = true
@@ -139,15 +145,18 @@ func handle_climb_ladder():
 				return
 		position.y += 1
 		
-		
+	# actions, when not conntected to a ladder	
 	else:
+		
 		# check if Player can be connected to a ladder	
 		for area in $ClimbLadderBottomHitBox.get_overlapping_areas():
+			
+			# connect to ladder in order to climb up
 			if area.name == \"LadderBottom\" and Input.is_action_pressed(\"jump\") and is_on_floor():
 				is_connected_to_ladder = true
-			
+				
+			# connect to ladder in order to climb down
 			if area.name == \"LadderTop\" and Input.is_action_pressed(\"down\") and is_on_floor():
-
 				position.y += 9
 				$Sprite.frame = 6
 				has_reached_top_ladder = true
@@ -163,9 +172,10 @@ extents = Vector2( 10, 8 )
 [sub_resource type="RectangleShape2D" id=3]
 extents = Vector2( 61.5385, 10 )
 
-[sub_resource type="Animation" id=4]
-resource_name = "climbing_idle"
+[sub_resource type="Animation" id=12]
+resource_name = "climbing"
 length = 0.5
+loop = true
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -177,6 +187,18 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ 4 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:flip_h")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ false, true ]
 }
 
 [sub_resource type="Animation" id=5]
@@ -255,19 +277,16 @@ position = Vector2( -1, -8 )
 texture = ExtResource( 1 )
 vframes = 2
 hframes = 6
-frame = 7
+frame = 4
 
 [node name="ObjectHitBox" type="Area2D" parent="."]
-visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ObjectHitBox"]
-visible = false
 position = Vector2( 0, -8 )
 scale = Vector2( 0.6, 1.05 )
 shape = SubResource( 2 )
 
 [node name="ClimbPlatformHitBox" type="Area2D" parent="."]
-visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ClimbPlatformHitBox"]
 position = Vector2( 0, -1 )
@@ -275,7 +294,7 @@ scale = Vector2( 0.099, 0.1 )
 shape = SubResource( 3 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/climbing_idle = SubResource( 4 )
+anims/climbing = SubResource( 12 )
 anims/climbing_platform_edge_up = SubResource( 5 )
 anims/idle = SubResource( 6 )
 anims/jump = SubResource( 7 )
