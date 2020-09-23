@@ -459,11 +459,8 @@ position = Vector2( 120, 274 )
 
 [node name="Node" type="Node" parent="."]
 
-[node name="Barrel" parent="Node" instance=ExtResource( 4 )]
-position = Vector2( 152, 230 )
-
-[node name="Barrel2" parent="Node" instance=ExtResource( 4 )]
-position = Vector2( 111, 169 )
-
 [node name="Barrel3" parent="Node" instance=ExtResource( 4 )]
 position = Vector2( 77, 96 )
+
+[node name="Barrel4" parent="Node" instance=ExtResource( 4 )]
+position = Vector2( 104, 169 )
