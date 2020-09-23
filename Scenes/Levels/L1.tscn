@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Scenes/PlatformElement.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scenes/Player.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scenes/Ladder.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Scenes/Barrel.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Assets/barrel.png" type="Texture" id=5]
+[ext_resource path="res://Scenes/BarrelSpawner.tscn" type="PackedScene" id=6]
 
 [node name="L1" type="Node2D"]
 
@@ -13,11 +14,11 @@
 [node name="Level1" type="Node2D" parent="Ladders"]
 
 [node name="Ladder" parent="Ladders/Level1" instance=ExtResource( 3 )]
-position = Vector2( 84, 283 )
+position = Vector2( 87, 283 )
 is_bottom = true
 
 [node name="Ladder2" parent="Ladders/Level1" instance=ExtResource( 3 )]
-position = Vector2( 84, 255 )
+position = Vector2( 87, 255 )
 
 [node name="Ladder3" parent="Ladders/Level1" instance=ExtResource( 3 )]
 position = Vector2( 185, 279 )
@@ -81,11 +82,11 @@ position = Vector2( 119, 192 )
 [node name="Ladder7" parent="Ladders/Level3" instance=ExtResource( 3 )]
 position = Vector2( 119, 184 )
 
-[node name="Ladder3" parent="Ladders/Level3" instance=ExtResource( 3 )]
-position = Vector2( 68, 183 )
+[node name="Ladder12" parent="Ladders/Level3" instance=ExtResource( 3 )]
+position = Vector2( 56, 180 )
 
 [node name="Ladder" parent="Ladders/Level3" instance=ExtResource( 3 )]
-position = Vector2( 68, 211 )
+position = Vector2( 56, 213 )
 is_bottom = true
 
 [node name="Ladder9" parent="Ladders/Level3" instance=ExtResource( 3 )]
@@ -119,6 +120,9 @@ position = Vector2( 168, 175 )
 is_bottom = true
 
 [node name="Ladder2" parent="Ladders/Level4" instance=ExtResource( 3 )]
+position = Vector2( 168, 143 )
+
+[node name="Ladder11" parent="Ladders/Level4" instance=ExtResource( 3 )]
 position = Vector2( 168, 147 )
 
 [node name="Ladder3" parent="Ladders/Level4" instance=ExtResource( 3 )]
@@ -460,7 +464,7 @@ position = Vector2( 120, 274 )
 [node name="Node" type="Node" parent="."]
 
 [node name="Barrel3" parent="Node" instance=ExtResource( 4 )]
-position = Vector2( 77, 96 )
+position = Vector2( 65, 104 )
 
-[node name="Barrel4" parent="Node" instance=ExtResource( 4 )]
-position = Vector2( 104, 169 )
+[node name="BarrelSpawner" parent="." instance=ExtResource( 6 )]
+position = Vector2( 44, 104 )

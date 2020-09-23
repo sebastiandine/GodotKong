@@ -53,7 +53,8 @@ func check_ladder_falling():
 	if not is_falling_ladder:
 		if check_for_ladder():
 			randomize()
-			var random_val = round(rand_range(0,2))
+			var random_val = randi() % 3 #33% chance of falling
+
 			if(random_val == 0):
 				animation.play(\"ladder_falling\")
 				position.y += 10
@@ -115,7 +116,7 @@ tracks/0/keys = {
 "values": [ 0, 1, 2, 3 ]
 }
 
-[sub_resource type="CircleShape2D" id=5]
+[sub_resource type="CircleShape2D" id=4]
 
 [node name="Barrel" type="KinematicBody2D"]
 script = SubResource( 1 )
@@ -134,7 +135,7 @@ anims/rolling = SubResource( 3 )
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 0, -5 )
 scale = Vector2( 0.6, 0.5 )
-shape = SubResource( 5 )
+shape = SubResource( 4 )
 
 [node name="RayCast2D" type="RayCast2D" parent="."]
 position = Vector2( 0, 3 )
