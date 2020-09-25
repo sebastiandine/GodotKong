@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Scenes/PlatformElement.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scenes/Player.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scenes/Ladder.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Scenes/FireElemental.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Assets/barrel.png" type="Texture" id=5]
 [ext_resource path="res://Scenes/BarrelSpawner.tscn" type="PackedScene" id=6]
 
@@ -462,3 +463,6 @@ position = Vector2( 120, 274 )
 
 [node name="BarrelSpawner" parent="." instance=ExtResource( 6 )]
 position = Vector2( 44, 104 )
+
+[node name="FireElemental" parent="." instance=ExtResource( 4 )]
+position = Vector2( 64, 280 )
