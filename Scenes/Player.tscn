@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://Assets/jumpman.png" type="Texture" id=1]
 
@@ -113,12 +113,19 @@ func ladder_animation():
 
 func handle_climb_platform():
 	# handle ascending platform climbing
-	for body in $ClimbPlatformHitBox.get_overlapping_bodies():
-		if body.name.begins_with(\"Platform\"):
-			if velocity.x > 0:
-				position += Vector2(1,-1)
-			elif velocity.x < 0:
-				position += Vector2(-1,-1)
+	var raycast = null
+	if velocity.x > 0:
+		raycast = $RayCastRight
+	elif velocity.x < 0:
+		raycast = $RayCastLeft
+	else:
+		return
+	
+	raycast.force_raycast_update()
+	var collider = raycast.get_collider()
+	if collider != null and collider.name.begins_with(\"Platform\"):
+		position.y -= 1
+
 
 
 func handle_climb_ladder():
@@ -165,12 +172,6 @@ func handle_climb_ladder():
 
 
 "
-
-[sub_resource type="RectangleShape2D" id=2]
-extents = Vector2( 10, 8 )
-
-[sub_resource type="RectangleShape2D" id=3]
-extents = Vector2( 61.5385, 10 )
 
 [sub_resource type="Animation" id=4]
 resource_name = "climbing"
@@ -278,21 +279,6 @@ texture = ExtResource( 1 )
 flip_h = true
 vframes = 2
 hframes = 6
-frame = 4
-
-[node name="ObjectHitBox" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ObjectHitBox"]
-position = Vector2( 0, -8 )
-scale = Vector2( 0.6, 1.05 )
-shape = SubResource( 2 )
-
-[node name="ClimbPlatformHitBox" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ClimbPlatformHitBox"]
-position = Vector2( 0, -1 )
-scale = Vector2( 0.099, 0.1 )
-shape = SubResource( 3 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/climbing = SubResource( 4 )
@@ -301,10 +287,9 @@ anims/idle = SubResource( 6 )
 anims/jump = SubResource( 7 )
 anims/running = SubResource( 8 )
 
-[node name="PlatformCollisionShape" type="CollisionShape2D" parent="."]
-visible = false
-position = Vector2( 0, -1 )
-scale = Vector2( 0.5, 0.1 )
+[node name="CollisionShapePhysic" type="CollisionShape2D" parent="."]
+position = Vector2( 0, -0.5 )
+scale = Vector2( 0.5, 0.05 )
 shape = SubResource( 9 )
 
 [node name="ClimbLadderBottomHitBox" type="Area2D" parent="."]
@@ -320,3 +305,13 @@ shape = SubResource( 10 )
 position = Vector2( 0, -6 )
 scale = Vector2( 0.2, 0.1 )
 shape = SubResource( 11 )
+
+[node name="RayCastRight" type="RayCast2D" parent="."]
+position = Vector2( 5, 0 )
+scale = Vector2( 0.2, 0.1 )
+cast_to = Vector2( 1, 0 )
+
+[node name="RayCastLeft" type="RayCast2D" parent="."]
+position = Vector2( -5, 0 )
+scale = Vector2( 0.2, 0.1 )
+cast_to = Vector2( -1, 0 )
