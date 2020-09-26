@@ -130,12 +130,13 @@ func handle_climb_platform():
 
 
 func handle_climb_ladder():
+
 	# handle climbing up and down a ladder
 	var raycast = null
-	
-	if velocity.y < 0:
+
+	if Input.is_action_pressed(\"jump\"):
 		raycast = $RayCastUp
-	elif velocity.y > 0:
+	elif Input.is_action_pressed(\"down\"):
 		raycast = $RayCastDown
 	else:
 		return
@@ -151,13 +152,22 @@ func handle_climb_ladder():
 #		# stop climbing ladder (down) and go to ground
 		if velocity.y > 0 and collider.name.begins_with(\"Platform\"):
 			is_connected_to_ladder = false 
+			raycast.collide_with_bodies = false
 			return
-			
+		
+		# fall if climbing down edge of broken ladder
+		if velocity.y > 0 and collider.name.begins_with(\"LadderGap\"):
+			is_connected_to_ladder = false 
+			raycast.collide_with_bodies = false
+			return
+		
 #		# stop climbing ladder (up) and go to next level platform
 		if velocity.y < 0:
 			while collider != null:
+				# multiple raycast checks
 				if collider.name.begins_with(\"Platform\"):
 					has_reached_top_ladder = true
+					$RayCastDown.collide_with_bodies = false
 				if collider.name.begins_with(\"LadderGap\"):
 					velocity.y = 0
 					
@@ -173,16 +183,18 @@ func handle_climb_ladder():
 		# check if Player can be connected to a ladder	
 		if not is_on_floor():
 			return
-	
-		print(collider.name)
+
 		if Input.is_action_pressed(\"jump\") and collider.name.begins_with(\"Ladder\"):
 			is_connected_to_ladder = true
+			$RayCastDown.collide_with_bodies = true
 			return
+
 		if Input.is_action_pressed(\"down\") and collider.name.begins_with(\"Ladder\"):
 			position.y += 9
 			$Sprite.frame = 6
 			has_reached_top_ladder = true
 			is_connected_to_ladder = true
+			$RayCastDown.collide_with_bodies = true
 			
 
 
@@ -314,12 +326,13 @@ scale = Vector2( 0.2, 0.1 )
 cast_to = Vector2( -1, 0 )
 
 [node name="RayCastDown" type="RayCast2D" parent="."]
-position = Vector2( 0, 2 )
+position = Vector2( 0, 1 )
 scale = Vector2( 0.2, 0.2 )
 cast_to = Vector2( 0, 10 )
 collide_with_areas = true
+collide_with_bodies = false
 
 [node name="RayCastUp" type="RayCast2D" parent="."]
 scale = Vector2( 0.2, 0.2 )
-cast_to = Vector2( 0, -40 )
+cast_to = Vector2( 0, -35 )
 collide_with_areas = true
