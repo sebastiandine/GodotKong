@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Assets/jumpman.png" type="Texture" id=1]
 
@@ -89,6 +89,7 @@ func ladder_animation():
 		animation.stop()
 		
 	if velocity.y != 0:
+
 		# normal climbing
 		if not has_reached_top_ladder:
 			animation.play(\"climbing\")
@@ -130,50 +131,64 @@ func handle_climb_platform():
 
 func handle_climb_ladder():
 	# handle climbing up and down a ladder
+	var raycast = null
+	
+	if velocity.y < 0:
+		raycast = $RayCastUp
+	elif velocity.y > 0:
+		raycast = $RayCastDown
+	else:
+		return
+	
+	raycast.force_raycast_update()
+	var collider = raycast.get_collider()
+	if collider == null:
+		return
 
 	# action, when already conntected to a ladder
 	if is_connected_to_ladder:		
 		
-		# stop climbing ladder (down) and go to ground
-		for body in $ClimbLadderBottomHitBox.get_overlapping_bodies():
-			if body.name.begins_with(\"Platform\") and Input.is_action_pressed(\"down\"):
-				is_connected_to_ladder = false 
-				return
-		
-		# stop climbing ladder (up) and go to next level platform
-		for area in $ClimbLadderTopHitBox.get_overlapping_areas() :
-			if area.name == \"LadderTop\" and Input.is_action_pressed(\"jump\"):
-				has_reached_top_ladder = true
-				return
-		
-		# refuse climbing if no ladder element is found (broken ladders)
-		for area in $ClimbLadderBottomHitBox.get_overlapping_areas():
-			if area.name.begins_with(\"Ladder\"):
-				return
-		position.y += 1
-		
+#		# stop climbing ladder (down) and go to ground
+		if velocity.y > 0 and collider.name.begins_with(\"Platform\"):
+			is_connected_to_ladder = false 
+			return
+			
+#		# stop climbing ladder (up) and go to next level platform
+		if velocity.y < 0:
+			while collider != null:
+				if collider.name.begins_with(\"Platform\"):
+					has_reached_top_ladder = true
+				if collider.name.begins_with(\"LadderGap\"):
+					velocity.y = 0
+					
+				raycast.add_exception(collider)
+				raycast.force_raycast_update()
+				collider = raycast.get_collider()
+			
+			raycast.clear_exceptions()
+			return
+
 	# actions, when not conntected to a ladder	
 	else:
-		
 		# check if Player can be connected to a ladder	
-		for area in $ClimbLadderBottomHitBox.get_overlapping_areas():
-			
-			# connect to ladder in order to climb up
-			if area.name == \"LadderBottom\" and Input.is_action_pressed(\"jump\") and is_on_floor():
-				is_connected_to_ladder = true
-				
-			# connect to ladder in order to climb down
-			if area.name == \"LadderTop\" and Input.is_action_pressed(\"down\") and is_on_floor():
-				position.y += 9
-				$Sprite.frame = 6
-				has_reached_top_ladder = true
-				is_connected_to_ladder = true
+		if not is_on_floor():
+			return
+	
+		print(collider.name)
+		if Input.is_action_pressed(\"jump\") and collider.name.begins_with(\"Ladder\"):
+			is_connected_to_ladder = true
+			return
+		if Input.is_action_pressed(\"down\") and collider.name.begins_with(\"Ladder\"):
+			position.y += 9
+			$Sprite.frame = 6
+			has_reached_top_ladder = true
+			is_connected_to_ladder = true
 			
 
 
 "
 
-[sub_resource type="Animation" id=4]
+[sub_resource type="Animation" id=2]
 resource_name = "climbing"
 length = 0.5
 loop = true
@@ -202,7 +217,7 @@ tracks/1/keys = {
 "values": [ false, true ]
 }
 
-[sub_resource type="Animation" id=5]
+[sub_resource type="Animation" id=3]
 resource_name = "climbing_platform_edge_up"
 length = 0.6
 tracks/0/type = "value"
@@ -218,7 +233,7 @@ tracks/0/keys = {
 "values": [ 5, 6 ]
 }
 
-[sub_resource type="Animation" id=6]
+[sub_resource type="Animation" id=4]
 length = 0.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -233,7 +248,7 @@ tracks/0/keys = {
 "values": [ 0, 0 ]
 }
 
-[sub_resource type="Animation" id=7]
+[sub_resource type="Animation" id=5]
 length = 0.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -248,7 +263,7 @@ tracks/0/keys = {
 "values": [ 3, 0 ]
 }
 
-[sub_resource type="Animation" id=8]
+[sub_resource type="Animation" id=6]
 length = 0.3
 loop = true
 tracks/0/type = "value"
@@ -264,11 +279,7 @@ tracks/0/keys = {
 "values": [ 1, 2 ]
 }
 
-[sub_resource type="RectangleShape2D" id=9]
-
-[sub_resource type="RectangleShape2D" id=10]
-
-[sub_resource type="RectangleShape2D" id=11]
+[sub_resource type="RectangleShape2D" id=7]
 
 [node name="Player" type="KinematicBody2D"]
 script = SubResource( 1 )
@@ -281,30 +292,16 @@ vframes = 2
 hframes = 6
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/climbing = SubResource( 4 )
-anims/climbing_platform_edge_up = SubResource( 5 )
-anims/idle = SubResource( 6 )
-anims/jump = SubResource( 7 )
-anims/running = SubResource( 8 )
+anims/climbing = SubResource( 2 )
+anims/climbing_platform_edge_up = SubResource( 3 )
+anims/idle = SubResource( 4 )
+anims/jump = SubResource( 5 )
+anims/running = SubResource( 6 )
 
 [node name="CollisionShapePhysic" type="CollisionShape2D" parent="."]
 position = Vector2( 0, -0.5 )
 scale = Vector2( 0.5, 0.05 )
-shape = SubResource( 9 )
-
-[node name="ClimbLadderBottomHitBox" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ClimbLadderBottomHitBox"]
-position = Vector2( 0, 5.96046e-08 )
-scale = Vector2( 0.2, 0.1 )
-shape = SubResource( 10 )
-
-[node name="ClimbLadderTopHitBox" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ClimbLadderTopHitBox"]
-position = Vector2( 0, -6 )
-scale = Vector2( 0.2, 0.1 )
-shape = SubResource( 11 )
+shape = SubResource( 7 )
 
 [node name="RayCastRight" type="RayCast2D" parent="."]
 position = Vector2( 5, 0 )
@@ -315,3 +312,14 @@ cast_to = Vector2( 1, 0 )
 position = Vector2( -5, 0 )
 scale = Vector2( 0.2, 0.1 )
 cast_to = Vector2( -1, 0 )
+
+[node name="RayCastDown" type="RayCast2D" parent="."]
+position = Vector2( 0, 2 )
+scale = Vector2( 0.2, 0.2 )
+cast_to = Vector2( 0, 10 )
+collide_with_areas = true
+
+[node name="RayCastUp" type="RayCast2D" parent="."]
+scale = Vector2( 0.2, 0.2 )
+cast_to = Vector2( 0, -40 )
+collide_with_areas = true
