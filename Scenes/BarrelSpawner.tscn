@@ -33,7 +33,7 @@ func _on_Timer_timeout():
 		
 		var barrel_scene = load(\"res://Scenes/Barrel.tscn\")
 		var barrel = barrel_scene.instance()
-		barrel.position = Vector2(65, 104)
+		barrel.position = Vector2(position.x + 10, position.y)
 		get_parent().add_child(barrel)
 	else:
 		animation.play(\"posing\")

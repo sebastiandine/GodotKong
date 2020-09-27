@@ -46,7 +46,6 @@ func _process(delta):
 
 	move_and_slide_with_snap(velocity, Vector2(0,1), UP_VECTOR)
 	
-
 func check_ladder_falling():
 	# check if the barrel is moving over the top of a ladder and
 	# decide randomly, if it falls down this ladder
@@ -68,9 +67,16 @@ func check_ladder_falling():
 	
 	
 func check_destroy():
-	# destroy the barrel, if it reached the lower left corner
+	# destroy the barrel if it reached the lower left corner
 	if floor(position.x) == 8 and position.y > 280:
 		 queue_free()
+		
+	#detroy the barrel if it hits the elemental spawner
+	if get_slide_count() > 0:
+		for i in range(get_slide_count()):
+			if get_slide_collision(i).collider != null \\
+			and \"ElementalSpawner\" in get_slide_collision(i).collider.name:
+				queue_free()
 		
 		
 func check_for_ladder():
