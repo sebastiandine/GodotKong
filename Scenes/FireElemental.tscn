@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Assets/fireelemental.png" type="Texture" id=1]
 
@@ -7,15 +7,17 @@ script/source = "extends KinematicBody2D
 
 onready var animation = $AnimationPlayer
 
-const SPEED = 10
+const SPEED = 50
 const GRAVITY = 200
 const UP_VECTOR = Vector2(0,-1) #indicator, how the up direction is defined 
 
 var velocity = Vector2()
 var direction = 1 # 1 = right, -1 left
+var climbing_dir = 1 # 1 down, -1 up
 
 var is_climbing_ladder = false
 var last_ladder_id = 0
+var last_body_id = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -30,6 +32,8 @@ func _process(delta):
 		$Sprite.flip_h = true
 	
 	animation.play(\"moving\")
+	
+	
 	if is_on_floor() and not is_climbing_ladder:
 		velocity.y = 0
 		
@@ -41,60 +45,109 @@ func _process(delta):
 			last_ladder_id = 0
 			
 		velocity.x = direction * SPEED
+
 	else:
 		velocity.x = 0
 		if not is_climbing_ladder:
 			velocity.y += GRAVITY * delta # make fall faster the longer the fall
+		else:
+			velocity.y = 0
 
-	ladder_test()
+	handle_ladder_decision()
 	handle_climb_platform()
+	
 
 	move_and_slide_with_snap(velocity, Vector2(0,1), UP_VECTOR)
 
 
-func ladder_test():
+func handle_ladder_decision():
+
 	if not is_climbing_ladder:
-		for area in $LadderBottomHitBox.get_overlapping_areas():
-			if area.name.begins_with(\"LadderBottom\") and last_ladder_id != area.get_instance_id():
-				last_ladder_id = area.get_instance_id()
+		
+		#check for ladder climbing up
+		$RayCastUp.force_raycast_update()
+		var collider = $RayCastUp.get_collider()
+
+		if collider != null \\
+			and collider.name.begins_with(\"Ladder\") \\
+			and last_ladder_id != collider.get_instance_id():
+				
+			last_ladder_id = collider.get_instance_id()
+			randomize()
+			var random_val = randi() % 3 
+
+			if random_val == 0:
+				return
+			elif random_val == 1:
+				direction = direction * -1
+			else:
+				position.y -= 2 # need to get off ground first
+				climbing_dir = -1
+				is_climbing_ladder = true
+				$RayCastUp.collide_with_areas = false #during climbing we only need to check for platform (body)
+		
+		# check for ladder climbing down
+		$RayCastDown.force_raycast_update()
+		collider = $RayCastDown.get_collider()
+
+		if collider != null \\
+			and collider.name.begins_with(\"Ladder\") \\
+			and last_ladder_id != collider.get_instance_id():	
+
 				randomize()
-				var random_val = randi() % 3 #33% chance of falling
-
-				if random_val == 0:
-					return
-				elif random_val == 1:
-					direction = direction * -1
-				else:
-					pass
+				var random_val = randi() % 2 #33% chance of falling
+				random_val = 1
+				if random_val == 1:
+					position.y += 4
+					climbing_dir = 1
 					is_climbing_ladder = true
-					position.y -= SPEED
+					$RayCastDown.collide_with_bodies = true
+					$RayCastDown.collide_with_areas = false #during climbing we only need to check for platform (body)
+					
+
 	else:
-		velocity.y = -1
 
+		velocity.y = climbing_dir * SPEED
+		var raycast = null
+		if climbing_dir == 1:
+			raycast = $RayCastDown
+		else:
+			raycast = $RayCastUp
 
-	
+		raycast.force_raycast_update()
+		var collider = raycast.get_collider()
+		if collider == null:
+			return
+
+		if collider.name.begins_with(\"Platform\"):
+			if climbing_dir == -1:
+				position.y -= 5
+			velocity.y = 0
+			is_climbing_ladder = false
+			raycast.collide_with_areas = true
+
 
 func handle_climb_platform():
 	# handle ascending platform climbing
 	var raycast = null
 	if direction == 1:
-		raycast = $PlatformRayCastRight
+		raycast = $RayCastRight
 	else:
-		raycast = $PlatformRayCastLeft
+		raycast = $RayCastLeft
 		
 	raycast.force_raycast_update()
 	var collider = raycast.get_collider()
 	if collider != null and collider.name.begins_with(\"Platform\"):
 		position.y -= 1
 	return false
-		
+			
+
 "
 
-[sub_resource type="RectangleShape2D" id=2]
+[sub_resource type="RectangleShape2D" id=3]
 extents = Vector2( 15, 10 )
 
-[sub_resource type="Animation" id=3]
-resource_name = "moving"
+[sub_resource type="Animation" id=4]
 length = 0.8
 loop = true
 tracks/0/type = "value"
@@ -122,9 +175,6 @@ tracks/1/keys = {
 "values": [ Vector2( 0, -9 ), Vector2( 0, -8 ) ]
 }
 
-[sub_resource type="RectangleShape2D" id=4]
-extents = Vector2( 10, 8 )
-
 [node name="FireElemental" type="KinematicBody2D"]
 script = SubResource( 1 )
 
@@ -134,27 +184,33 @@ texture = ExtResource( 1 )
 vframes = 2
 hframes = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( 0, -8 )
-scale = Vector2( 0.4, 0.8 )
-shape = SubResource( 2 )
+[node name="CollisionShapePhysicEngine" type="CollisionShape2D" parent="."]
+position = Vector2( 0, -1 )
+scale = Vector2( 0.35, 0.1 )
+shape = SubResource( 3 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/moving = SubResource( 3 )
+anims/moving = SubResource( 4 )
 
-[node name="LadderBottomHitBox" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="LadderBottomHitBox"]
-position = Vector2( 0, -1 )
-scale = Vector2( 0.05, 0.1 )
-shape = SubResource( 4 )
-
-[node name="PlatformRayCastRight" type="RayCast2D" parent="."]
+[node name="RayCastRight" type="RayCast2D" parent="."]
 position = Vector2( 6, 0 )
 scale = Vector2( 0.2, 0.1 )
 cast_to = Vector2( 1, 0 )
 
-[node name="PlatformRayCastLeft" type="RayCast2D" parent="."]
+[node name="RayCastLeft" type="RayCast2D" parent="."]
 position = Vector2( -6, 0 )
 scale = Vector2( 0.2, 0.1 )
 cast_to = Vector2( -1, 0 )
+
+[node name="RayCastUp" type="RayCast2D" parent="."]
+position = Vector2( 0, -2 )
+scale = Vector2( 0.2, 0.3 )
+cast_to = Vector2( 0, -4 )
+collide_with_areas = true
+
+[node name="RayCastDown" type="RayCast2D" parent="."]
+position = Vector2( 0, 1 )
+scale = Vector2( 0.2, 0.3 )
+cast_to = Vector2( 0, 4 )
+collide_with_areas = true
+collide_with_bodies = false

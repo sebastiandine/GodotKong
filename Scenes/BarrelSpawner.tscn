@@ -47,7 +47,7 @@ func randomizer():
 		return false
 "
 
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id=2]
 resource_name = "posing"
 length = 0.6
 tracks/0/type = "value"
@@ -75,8 +75,7 @@ tracks/1/keys = {
 "values": [ false, true, false ]
 }
 
-[sub_resource type="Animation" id=2]
-resource_name = "spawn_barrel"
+[sub_resource type="Animation" id=3]
 length = 0.9
 tracks/0/type = "value"
 tracks/0/path = NodePath("KongSprite:frame")
@@ -136,6 +135,6 @@ vframes = 4
 hframes = 4
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/posing = SubResource( 3 )
-anims/spawn_barrel = SubResource( 2 )
+anims/posing = SubResource( 2 )
+anims/spawn_barrel = SubResource( 3 )
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

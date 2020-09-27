@@ -310,7 +310,7 @@ anims/idle = SubResource( 4 )
 anims/jump = SubResource( 5 )
 anims/running = SubResource( 6 )
 
-[node name="CollisionShapePhysic" type="CollisionShape2D" parent="."]
+[node name="CollisionShapePhysicEngine" type="CollisionShape2D" parent="."]
 position = Vector2( 0, -0.5 )
 scale = Vector2( 0.5, 0.05 )
 shape = SubResource( 7 )

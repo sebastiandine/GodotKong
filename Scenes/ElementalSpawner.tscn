@@ -1,0 +1,71 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Assets/firebarrel.png" type="Texture" id=1]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends StaticBody2D
+
+onready var animation = $AnimationPlayer
+
+
+func _ready():
+	animation.play(\"standard\")
+
+
+func _on_Timer_timeout():
+
+	if randomizer():
+		var elemental_scene = load(\"res://Scenes/FireElemental.tscn\")
+		var elemental = elemental_scene.instance()
+		elemental.position = Vector2(position.x, position.y - 10)
+		get_parent().add_child(elemental)
+
+func randomizer():
+	randomize()
+	var random_val = randi() % 2 #50% chance
+	if(random_val == 0):
+		return true
+	else:
+		return false
+"
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 8, 8 )
+
+[sub_resource type="Animation" id=3]
+resource_name = "standard"
+length = 0.6
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 0, 1 ]
+}
+
+[node name="ElementalSpawner" type="StaticBody2D"]
+script = SubResource( 1 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( 0, -8 )
+shape = SubResource( 2 )
+
+[node name="Sprite" type="Sprite" parent="."]
+position = Vector2( 0, -16 )
+texture = ExtResource( 1 )
+vframes = 3
+hframes = 3
+frame = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/standard = SubResource( 3 )
+
+[node name="Timer" type="Timer" parent="."]
+autostart = true
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
