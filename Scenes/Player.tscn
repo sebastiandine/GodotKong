@@ -22,14 +22,10 @@ var jump_mode = false
 var is_connected_to_ladder = false
 var has_reached_top_ladder = false
 
-func _ready():
-	print(\"new\")
-	print(self.get_instance_id())
 
 func _process(delta):
 	
 	if check_dead():
-
 		get_parent().hide_all_game_objects()
 		set_process(false)
 		animation.play(\"dead\")
@@ -38,7 +34,6 @@ func _process(delta):
 		get_parent().get_tree().reload_current_scene()
 		
 	velocity.x = 0
-	
 	if is_connected_to_ladder:
 		velocity.y = 0
 	else:
@@ -192,7 +187,7 @@ func handle_climb_ladder():
 		# check if Player can be connected to a ladder	
 		if not is_on_floor():
 			return
-
+			
 		if Input.is_action_pressed(\"jump\") and collider.name.begins_with(\"Ladder\"):
 			is_connected_to_ladder = true
 			$RayCastDown.collide_with_bodies = true
@@ -207,6 +202,7 @@ func handle_climb_ladder():
 			
 
 func check_dead() -> bool:
+	# check if the player hit a fatal game object
 	for body in $HitBox.get_overlapping_bodies():
 		if \"FireElemental\" in body.name or \"Barrel\" in body.name:
 			return true
@@ -340,6 +336,7 @@ tracks/0/keys = {
 
 [node name="Player" type="KinematicBody2D"]
 pause_mode = 2
+collision_layer = 4
 script = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
@@ -358,6 +355,7 @@ anims/jump = SubResource( 5 )
 anims/running = SubResource( 6 )
 
 [node name="HitBox" type="Area2D" parent="."]
+collision_layer = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
 position = Vector2( 0, -8 )
