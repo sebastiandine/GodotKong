@@ -6,39 +6,23 @@
 [sub_resource type="GDScript" id=1]
 script/source = "extends Node2D
 
-onready var animation = $AnimationPlayer
+onready var animation: AnimationPlayer = $AnimationPlayer
 
-
-# Declare member variables here. Examples:
-# var a = 2
-# var b = \"text\"
-
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
-
-
-func _on_Timer_timeout():
+func _on_Timer_timeout() -> void:
+	# decide randomly, whether to spawn a new barrel or not.
 	if randomizer():
-		#self.set_process(false)
 		animation.play(\"spawn_barrel\")
 		yield(animation, \"animation_finished\")
-		#self.set_process(true)
 		
 		var barrel_scene = load(\"res://Scenes/Barrel.tscn\")
 		var barrel = barrel_scene.instance()
-		barrel.position = Vector2(position.x + 10, position.y)
+		barrel.position = Vector2(position.x + 16, position.y)
 		get_parent().add_child(barrel)
 	else:
 		animation.play(\"posing\")
 
-func randomizer():
+func randomizer() -> bool:
+	# randomizer with 33% chance for true
 	randomize()
 	var random_val = randi() % 3 #33% chance
 	if(random_val == 0):

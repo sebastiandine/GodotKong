@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://Assets/jumpman.png" type="Texture" id=1]
 
@@ -22,12 +22,21 @@ var jump_mode = false
 var is_connected_to_ladder = false
 var has_reached_top_ladder = false
 
-
-# Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	print(\"new\")
+	print(self.get_instance_id())
 
 func _process(delta):
+	
+	if check_dead():
+
+		get_parent().hide_all_game_objects()
+		set_process(false)
+		animation.play(\"dead\")
+		yield(animation, \"animation_finished\")
+		set_process(true)
+		get_parent().get_tree().reload_current_scene()
+		
 	velocity.x = 0
 	
 	if is_connected_to_ladder:
@@ -197,6 +206,12 @@ func handle_climb_ladder():
 			$RayCastDown.collide_with_bodies = true
 			
 
+func check_dead() -> bool:
+	for body in $HitBox.get_overlapping_bodies():
+		if \"FireElemental\" in body.name or \"Barrel\" in body.name:
+			return true
+	return false
+
 
 "
 
@@ -245,6 +260,34 @@ tracks/0/keys = {
 "values": [ 5, 6 ]
 }
 
+[sub_resource type="Animation" id=9]
+resource_name = "dead"
+length = 1.6
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 8, 9 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite:rotation_degrees")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.2, 0.4, 0.6, 0.8 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 0.0, 90.0, 180.0, 270.0, 360.0 ]
+}
+
 [sub_resource type="Animation" id=4]
 length = 0.5
 tracks/0/type = "value"
@@ -291,24 +334,35 @@ tracks/0/keys = {
 "values": [ 1, 2 ]
 }
 
+[sub_resource type="RectangleShape2D" id=8]
+
 [sub_resource type="RectangleShape2D" id=7]
 
 [node name="Player" type="KinematicBody2D"]
+pause_mode = 2
 script = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( -1, -8 )
 texture = ExtResource( 1 )
-flip_h = true
 vframes = 2
 hframes = 6
+frame = 8
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/climbing = SubResource( 2 )
 anims/climbing_platform_edge_up = SubResource( 3 )
+anims/dead = SubResource( 9 )
 anims/idle = SubResource( 4 )
 anims/jump = SubResource( 5 )
 anims/running = SubResource( 6 )
+
+[node name="HitBox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+position = Vector2( 0, -8 )
+scale = Vector2( 0.55, 0.8 )
+shape = SubResource( 8 )
 
 [node name="CollisionShapePhysicEngine" type="CollisionShape2D" parent="."]
 position = Vector2( 0, -0.5 )

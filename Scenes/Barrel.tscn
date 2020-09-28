@@ -5,20 +5,16 @@
 [sub_resource type="GDScript" id=1]
 script/source = "extends KinematicBody2D
 
-onready var animation = $AnimationPlayer
+onready var animation: AnimationPlayer = $AnimationPlayer
 
-const SPEED = 50
-const GRAVITY = 200
-const UP_VECTOR = Vector2(0,-1) #indicator, how the up direction is defined 
+const SPEED: int = 50
+const GRAVITY: int = 200
+const UP_VECTOR: Vector2 = Vector2(0,-1) #indicator, how the up direction is defined 
 
-var velocity = Vector2()
-var direction = 1 # 1 = right, -1 left
+var velocity: Vector2 = Vector2()
+var direction: int = 1 # 1 = right, -1 left
 
-var is_falling_ladder = false
-
-
-func _ready():
-	pass
+var is_falling_ladder: bool = false # indicator, if the barrel is falling down a ladder
 
 
 func _process(delta):
@@ -29,7 +25,7 @@ func _process(delta):
 	if is_on_floor() and not is_falling_ladder:
 		velocity.y = 0
 		
-		if direction:
+		if direction == 1:
 			animation.play(\"rolling\")
 		else:
 			animation.play_backwards(\"rolling\")
@@ -46,19 +42,24 @@ func _process(delta):
 
 	move_and_slide_with_snap(velocity, Vector2(0,1), UP_VECTOR)
 	
-func check_ladder_falling():
+func check_ladder_falling() -> bool:
 	# check if the barrel is moving over the top of a ladder and
-	# decide randomly, if it falls down this ladder
+	# decide randomly, if it falls down this ladder.
+	#
+	# returns bool: true, if the barrel is falling down a ladder, false if not
 	if not is_falling_ladder:
 		if check_for_ladder():
 			randomize()
-			var random_val = randi() % 3 #33% chance of falling
+			var random_val: int = randi() % 3 #33% chance of falling
 
 			if(random_val == 0):
 				animation.play(\"ladder_falling\")
 				position.y += 10
 				direction = -1 * direction
 				return true
+
+		return false
+
 	else:
 		if is_on_floor() and not check_for_ladder():
 			return false
@@ -66,8 +67,9 @@ func check_ladder_falling():
 			return true
 	
 	
-func check_destroy():
+func check_destroy() -> void:
 	# destroy the barrel if it reached the lower left corner
+	# or collides with a fire elemental.
 	if floor(position.x) == 8 and position.y > 280:
 		 queue_free()
 		
@@ -79,8 +81,10 @@ func check_destroy():
 				queue_free()
 		
 		
-func check_for_ladder():
+func check_for_ladder() -> bool:
 	# check if the barrel is currently positioned over a ladder.
+	#
+	# returns bool: true, if the barrel is over a ladder, false if not
 	$RayCast2D.force_raycast_update()
 	var collider = $RayCast2D.get_collider()
 	if collider != null:

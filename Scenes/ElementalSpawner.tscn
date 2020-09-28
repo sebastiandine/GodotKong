@@ -5,15 +5,14 @@
 [sub_resource type="GDScript" id=1]
 script/source = "extends StaticBody2D
 
-onready var animation = $AnimationPlayer
-
+onready var animation: AnimationPlayer = $AnimationPlayer
 
 func _ready():
 	animation.play(\"standard\")
 
 
 func _on_Timer_timeout():
-
+	# decide randomly, whether to spawn a new barrel or not.
 	if randomizer():
 		var elemental_scene = load(\"res://Scenes/FireElemental.tscn\")
 		var elemental = elemental_scene.instance()
@@ -21,6 +20,7 @@ func _on_Timer_timeout():
 		get_parent().add_child(elemental)
 
 func randomizer():
+		# randomizer with 50% chance for true
 	randomize()
 	var random_val = randi() % 2 #50% chance
 	if(random_val == 0):
@@ -67,6 +67,6 @@ frame = 1
 anims/standard = SubResource( 3 )
 
 [node name="Timer" type="Timer" parent="."]
-wait_time = 10.0
+wait_time = 5.0
 autostart = true
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
