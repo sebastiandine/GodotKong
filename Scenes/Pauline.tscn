@@ -18,7 +18,8 @@ func _process(delta):
 	var collider: Object = $RayCast2D.get_collider()
 
 	if collider != null and collider.name.begins_with(\"Player\"):
-		print(\"ja\")
+		get_parent().hide_all_game_objects()
+		get_parent().play_end_animation()
 
 
 func _on_Timer_timeout():
