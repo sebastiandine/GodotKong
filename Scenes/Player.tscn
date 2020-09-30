@@ -5,26 +5,28 @@
 [sub_resource type="GDScript" id=1]
 script/source = "extends KinematicBody2D
 
-onready var animation = $AnimationPlayer
+onready var animation: AnimationPlayer = $AnimationPlayer
 
-const SPEED = 60
-const LADDER_SPEED = 10
-const GRAVITY = 200
-const JUMP_POWER = 70
+const SPEED: int = 60
+const LADDER_SPEED: int = 20
+const GRAVITY: int = 200
+const JUMP_POWER: int = 70
 
 # indicator, how the up direction is defined 
-const UP_VECTOR = Vector2(0,-1) 
+const UP_VECTOR: Vector2 = Vector2(0,-1) 
 
-var velocity = Vector2()
+var velocity: Vector2 = Vector2()
 
-var jump_mode = false
+var jump_mode: bool = false
 
-var is_connected_to_ladder = false
-var has_reached_top_ladder = false
+var is_connected_to_ladder: bool = false
+var has_reached_top_ladder: bool = false
 
 
 func _process(delta):
 	
+	# check if player is dead, and play dead animation as well as restart
+	# the level in case of death
 	if check_dead():
 		get_parent().hide_all_game_objects()
 		set_process(false)
@@ -32,7 +34,8 @@ func _process(delta):
 		yield(animation, \"animation_finished\")
 		set_process(true)
 		get_parent().get_tree().reload_current_scene()
-		
+	
+	# velocity calculation according to various position status	
 	velocity.x = 0
 	if is_connected_to_ladder:
 		velocity.y = 0
@@ -55,7 +58,7 @@ func _process(delta):
 
 
 
-func check_key_input():
+func check_key_input() -> void:
 	
 	if not is_connected_to_ladder:
 		if Input.is_action_pressed(\"left\") and position.x > 8:
@@ -74,7 +77,8 @@ func check_key_input():
 			velocity.y = 1 * LADDER_SPEED
 
 
-func standard_animation():
+func standard_animation() -> void:
+	# standard running or standing animation, based on velocity
 	
 	if velocity.x > 0:
 		$Sprite.flip_h = false
@@ -87,7 +91,8 @@ func standard_animation():
 			animation.play(\"jump\") if jump_mode else animation.play(\"idle\")
 
 
-func ladder_animation():
+func ladder_animation() -> void:
+	# ladder climbing animation
 	
 	if velocity.y == 0:
 		animation.stop()
@@ -116,9 +121,10 @@ func ladder_animation():
 			self.set_process(true)
 
 
-func handle_climb_platform():
+func handle_climb_platform() -> void:
 	# handle ascending platform climbing
-	var raycast = null
+	
+	var raycast: RayCast2D = null
 	if velocity.x > 0:
 		raycast = $RayCastRight
 	elif velocity.x < 0:
@@ -127,16 +133,16 @@ func handle_climb_platform():
 		return
 	
 	raycast.force_raycast_update()
-	var collider = raycast.get_collider()
+	var collider: Object = raycast.get_collider()
 	if collider != null and collider.name.begins_with(\"Platform\"):
 		position.y -= 1
 
 
 
-func handle_climb_ladder():
-
+func handle_climb_ladder() -> void:
 	# handle climbing up and down a ladder
-	var raycast = null
+	
+	var raycast: RayCast2D = null
 
 	if Input.is_action_pressed(\"jump\"):
 		raycast = $RayCastUp
@@ -146,7 +152,7 @@ func handle_climb_ladder():
 		return
 	
 	raycast.force_raycast_update()
-	var collider = raycast.get_collider()
+	var collider: Object = raycast.get_collider()
 	if collider == null:
 		return
 
@@ -203,7 +209,8 @@ func handle_climb_ladder():
 
 func check_dead() -> bool:
 	# check if the player hit a fatal game object
-	for body in $HitBox.get_overlapping_bodies():
+	
+	for body in $PlayerHitBox.get_overlapping_bodies():
 		if \"FireElemental\" in body.name or \"Barrel\" in body.name:
 			return true
 	return false
@@ -256,7 +263,7 @@ tracks/0/keys = {
 "values": [ 5, 6 ]
 }
 
-[sub_resource type="Animation" id=9]
+[sub_resource type="Animation" id=4]
 resource_name = "dead"
 length = 1.6
 tracks/0/type = "value"
@@ -284,7 +291,7 @@ tracks/1/keys = {
 "values": [ 0.0, 90.0, 180.0, 270.0, 360.0 ]
 }
 
-[sub_resource type="Animation" id=4]
+[sub_resource type="Animation" id=5]
 length = 0.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -299,7 +306,7 @@ tracks/0/keys = {
 "values": [ 0, 0 ]
 }
 
-[sub_resource type="Animation" id=5]
+[sub_resource type="Animation" id=6]
 length = 0.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -314,7 +321,7 @@ tracks/0/keys = {
 "values": [ 3, 0 ]
 }
 
-[sub_resource type="Animation" id=6]
+[sub_resource type="Animation" id=7]
 length = 0.3
 loop = true
 tracks/0/type = "value"
@@ -332,7 +339,7 @@ tracks/0/keys = {
 
 [sub_resource type="RectangleShape2D" id=8]
 
-[sub_resource type="RectangleShape2D" id=7]
+[sub_resource type="RectangleShape2D" id=9]
 
 [node name="Player" type="KinematicBody2D"]
 pause_mode = 2
@@ -349,15 +356,15 @@ frame = 8
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/climbing = SubResource( 2 )
 anims/climbing_platform_edge_up = SubResource( 3 )
-anims/dead = SubResource( 9 )
-anims/idle = SubResource( 4 )
-anims/jump = SubResource( 5 )
-anims/running = SubResource( 6 )
+anims/dead = SubResource( 4 )
+anims/idle = SubResource( 5 )
+anims/jump = SubResource( 6 )
+anims/running = SubResource( 7 )
 
-[node name="HitBox" type="Area2D" parent="."]
+[node name="PlayerHitBox" type="Area2D" parent="."]
 collision_layer = 4
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerHitBox"]
 position = Vector2( 0, -8 )
 scale = Vector2( 0.55, 0.8 )
 shape = SubResource( 8 )
@@ -365,7 +372,7 @@ shape = SubResource( 8 )
 [node name="CollisionShapePhysicEngine" type="CollisionShape2D" parent="."]
 position = Vector2( 0, -0.5 )
 scale = Vector2( 0.5, 0.05 )
-shape = SubResource( 7 )
+shape = SubResource( 9 )
 
 [node name="RayCastRight" type="RayCast2D" parent="."]
 position = Vector2( 5, 0 )
