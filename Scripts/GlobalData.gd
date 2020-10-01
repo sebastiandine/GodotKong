@@ -5,6 +5,8 @@ extends Node
 # ----------------------------------------------------
 
 var level = 1
+var lives = 3
+var score = 0
 
 func _ready():
 	pass 

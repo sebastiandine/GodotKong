@@ -22,6 +22,7 @@ var jump_mode: bool = false
 var is_connected_to_ladder: bool = false
 var has_reached_top_ladder: bool = false
 
+var last_score_element: int = 0 
 
 func _process(delta):
 	
@@ -33,6 +34,7 @@ func _process(delta):
 		animation.play(\"dead\")
 		yield(animation, \"animation_finished\")
 		set_process(true)
+		GlobalData.lives -= 1
 		get_parent().get_tree().reload_current_scene()
 	
 	# velocity calculation according to various position status	
@@ -48,6 +50,7 @@ func _process(delta):
 	check_key_input()
 	handle_climb_platform()
 	handle_climb_ladder()
+	check_score()
 
 	velocity = move_and_slide(velocity, UP_VECTOR)
 	
@@ -206,6 +209,20 @@ func handle_climb_ladder() -> void:
 			is_connected_to_ladder = true
 			$RayCastDown.collide_with_bodies = true
 			
+
+func check_score() -> void:
+	# check if the player hit a score and trigger depending instances
+	
+	$RayCastDownScore.force_raycast_update()
+	var collider: Object = $RayCastDownScore.get_collider()
+	if collider != null:
+		if \"Barrel\" in collider.name and \\
+		collider.get_instance_id() != last_score_element:
+			get_parent().score(100, collider.position)
+			last_score_element = collider.get_instance_id()
+	else:
+		last_score_element = 0
+
 
 func check_dead() -> bool:
 	# check if the player hit a fatal game object
@@ -390,6 +407,11 @@ scale = Vector2( 0.2, 0.2 )
 cast_to = Vector2( 0, 10 )
 collide_with_areas = true
 collide_with_bodies = false
+
+[node name="RayCastDownScore" type="RayCast2D" parent="."]
+position = Vector2( 0, 5.96046e-08 )
+scale = Vector2( 0.2, 0.2 )
+cast_to = Vector2( 0, 20 )
 
 [node name="RayCastUp" type="RayCast2D" parent="."]
 scale = Vector2( 0.2, 0.2 )

@@ -1,0 +1,65 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Assets/score_panel_objects.png" type="Texture" id=1]
+[ext_resource path="res://Assets/pixeboy-font/pixeboy-font.tres" type="DynamicFont" id=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+func _ready():
+	
+	# display remaining lives
+	if GlobalData.lives <= 2:
+		$Sprites/life3.queue_free()
+	if GlobalData.lives <= 1:
+		$Sprites/life2.queue_free()
+	if GlobalData.lives <= 0:
+		$Sprites/life1.queue_free()
+
+func _process(delta):
+	$txtScore.text = str(\"%06d\" % GlobalData.score)
+"
+
+[node name="ScorePanel" type="Node2D"]
+script = SubResource( 1 )
+
+[node name="Sprites" type="Node2D" parent="."]
+
+[node name="life1" type="Sprite" parent="Sprites"]
+position = Vector2( 16, 40 )
+texture = ExtResource( 1 )
+hframes = 4
+
+[node name="life2" type="Sprite" parent="Sprites"]
+position = Vector2( 24, 40 )
+texture = ExtResource( 1 )
+hframes = 4
+
+[node name="life3" type="Sprite" parent="Sprites"]
+position = Vector2( 32, 40 )
+texture = ExtResource( 1 )
+hframes = 4
+
+[node name="LblHighScore" type="RichTextLabel" parent="."]
+margin_left = 80.0
+margin_top = 21.0
+margin_right = 160.0
+margin_bottom = 45.0
+rect_scale = Vector2( 0.7, 0.7 )
+custom_fonts/normal_font = ExtResource( 2 )
+text = "HIGH SCORE"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="txtScore" type="RichTextLabel" parent="."]
+margin_left = 8.0
+margin_top = 21.0
+margin_right = 56.0
+margin_bottom = 36.0
+rect_scale = Vector2( 0.7, 0.7 )
+custom_fonts/normal_font = ExtResource( 2 )
+text = "000000"
+__meta__ = {
+"_edit_use_anchors_": false
+}

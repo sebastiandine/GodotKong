@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://Scenes/PlatformElement.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scenes/Player.tscn" type="PackedScene" id=2]
@@ -13,21 +13,38 @@
 [ext_resource path="res://Assets/pauline_emotions.png" type="Texture" id=11]
 [ext_resource path="res://Assets/kong.png" type="Texture" id=12]
 [ext_resource path="res://Assets/kong_climbing.png" type="Texture" id=13]
+[ext_resource path="res://Scenes/ScorePanel.tscn" type="PackedScene" id=14]
+[ext_resource path="res://Scenes/ScoreMessage.tscn" type="PackedScene" id=15]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends Node2D
 
-
-func hide_all_game_objects():
+func _ready():
+	for child in $EndAnimationSprites.get_children():
+		child.hide()
+		
+		
+func hide_all_game_objects() -> void :
+	# hide all game objects expect the player
+	
 	for child in self.get_children():
 		if \"Elemental\" in child.name or \"Barrel\" in child.name or \"Pauline\" in child.name:
 			child.hide()
 
-func play_end_animation():
+func play_end_animation() -> void :
+	# play end animation and reload level
 	$Player.animation.play(\"idle\")
 	$Player.set_process(false)
+	self.set_process(false)
 	$AnimationPlayer.play(\"end_animation\")
-	
+	yield($AnimationPlayer, \"animation_finished\")
+	self.set_process(true)
+	#self.get_tree().reload_current_scene() -- tbd - seems to be buggy
+
+func score(score: int, position: Vector2) -> void : 
+	# save the score in the global data and trigger the score message
+	GlobalData.score += score
+	$ScoreMessage.show_score(score, position)
 "
 
 [sub_resource type="Animation" id=2]
@@ -672,21 +689,18 @@ position = Vector2( 96, 76 )
 [node name="EndAnimationSprites" type="Node" parent="."]
 
 [node name="kong" type="Sprite" parent="EndAnimationSprites"]
-visible = false
 position = Vector2( 44, 88 )
 texture = ExtResource( 12 )
 vframes = 4
 hframes = 4
 
 [node name="pauline_emotions" type="Sprite" parent="EndAnimationSprites"]
-visible = false
 position = Vector2( 113, 56 )
 texture = ExtResource( 11 )
 hframes = 4
-frame = 3
+frame = 2
 
 [node name="pauline" type="Sprite" parent="EndAnimationSprites"]
-visible = false
 position = Vector2( 96, 64 )
 texture = ExtResource( 10 )
 hframes = 3
@@ -700,3 +714,10 @@ hframes = 2
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/end_animation = SubResource( 2 )
+
+[node name="ScorePanel" parent="." instance=ExtResource( 14 )]
+position = Vector2( 0, -20 )
+
+[node name="ScoreMessage" parent="." instance=ExtResource( 15 )]
+position = Vector2( 104, 24 )
+z_index = 100

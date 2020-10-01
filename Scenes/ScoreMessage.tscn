@@ -1,0 +1,41 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Assets/pixeboy-font/pixeboy-font.tres" type="DynamicFont" id=1]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+func _ready():
+	self.hide()
+
+
+func show_score(score: int, position: Vector2) -> void:
+	
+	$RichTextLabel.text = str(\"%03d\" % score)
+	self.position = position
+	self.show()
+	$Timer.start()
+
+
+func _on_Timer_timeout():
+	self.hide()
+	$Timer.stop()
+"
+
+[node name="ScoreMessage" type="Node2D"]
+script = SubResource( 1 )
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+margin_left = -7.0
+margin_top = -7.0
+margin_right = 21.0
+margin_bottom = 33.0
+rect_scale = Vector2( 0.6, 0.6 )
+custom_fonts/normal_font = ExtResource( 1 )
+text = "000"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Timer" type="Timer" parent="."]
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
