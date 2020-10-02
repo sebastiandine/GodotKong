@@ -26,20 +26,24 @@ func _ready():
 		
 func hide_all_game_objects() -> void :
 	# hide all game objects expect the player
-	
 	for child in self.get_children():
 		if \"Elemental\" in child.name or \"Barrel\" in child.name or \"Pauline\" in child.name:
 			child.hide()
 
+
 func play_end_animation() -> void :
+	# stop processing of game objects with visiual effects (expect Animation),
 	# play end animation and reload level
 	$Player.animation.play(\"idle\")
+	$Pauline.set_process(false)
 	$Player.set_process(false)
-	self.set_process(false)
+	$BarrelSpawner.set_process(false)
+	$ElementalSpawner.set_process(false)
+
 	$AnimationPlayer.play(\"end_animation\")
 	yield($AnimationPlayer, \"animation_finished\")
-	self.set_process(true)
-	#self.get_tree().reload_current_scene() -- tbd - seems to be buggy
+	self.get_tree().reload_current_scene()
+
 
 func score(score: int, position: Vector2) -> void : 
 	# save the score in the global data and trigger the score message
