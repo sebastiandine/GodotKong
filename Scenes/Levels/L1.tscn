@@ -34,6 +34,9 @@ func hide_all_game_objects() -> void :
 func play_end_animation() -> void :
 	# stop processing of game objects with visiual effects (expect Animation),
 	# play end animation and reload level
+	$ScorePanel.stop_bonus_timer()
+	GlobalData.score += $ScorePanel.get_bonus_score()
+	
 	$Player.animation.play(\"idle\")
 	$Pauline.set_process(false)
 	$Player.set_process(false)
@@ -42,6 +45,7 @@ func play_end_animation() -> void :
 
 	$AnimationPlayer.play(\"end_animation\")
 	yield($AnimationPlayer, \"animation_finished\")
+	
 	self.get_tree().reload_current_scene()
 
 
@@ -679,7 +683,7 @@ position = Vector2( 110, 80 )
 position = Vector2( 94, 80 )
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
-position = Vector2( 192, 96 )
+position = Vector2( 176, 92 )
 
 [node name="ElementalSpawner" parent="." instance=ExtResource( 6 )]
 position = Vector2( 10, 287 )
