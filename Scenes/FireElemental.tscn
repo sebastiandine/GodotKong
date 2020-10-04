@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Assets/fireelemental.png" type="Texture" id=1]
 
@@ -154,12 +154,21 @@ func handle_collision():
 				else:
 					direction = -1 * direction
 			
+			# destroy elemental if it collides with a barrel
 			if \"Barrel\" in get_slide_collision(i).collider.name :
 				queue_free()
+	
+	# destroy the elemental, if it hits a hammer. Raise score.
+	for i in $HitBox.get_overlapping_areas():
+		if i.name.begins_with(\"Hammer\"):
+			get_parent().score(100, position)
+			queue_free()
 "
 
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 15, 10 )
+
+[sub_resource type="RectangleShape2D" id=4]
 
 [sub_resource type="Animation" id=3]
 length = 0.8
@@ -202,6 +211,13 @@ hframes = 2
 position = Vector2( 0, -1 )
 scale = Vector2( 0.35, 0.1 )
 shape = SubResource( 2 )
+
+[node name="HitBox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+position = Vector2( 0, -10 )
+scale = Vector2( 0.6, 0.4 )
+shape = SubResource( 4 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/moving = SubResource( 3 )

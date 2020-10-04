@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://Scenes/PlatformElement.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scenes/Player.tscn" type="PackedScene" id=2]
@@ -15,6 +15,7 @@
 [ext_resource path="res://Assets/kong_climbing.png" type="Texture" id=13]
 [ext_resource path="res://Scenes/ScorePanel.tscn" type="PackedScene" id=14]
 [ext_resource path="res://Scenes/ScoreMessage.tscn" type="PackedScene" id=15]
+[ext_resource path="res://Scenes/Hammer.tscn" type="PackedScene" id=16]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends Node2D
@@ -729,3 +730,9 @@ position = Vector2( 0, -20 )
 [node name="ScoreMessage" parent="." instance=ExtResource( 15 )]
 position = Vector2( 104, 24 )
 z_index = 100
+
+[node name="Hammer" parent="." instance=ExtResource( 16 )]
+position = Vector2( 24, 125 )
+
+[node name="Hammer2" parent="." instance=ExtResource( 16 )]
+position = Vector2( 172, 232 )
