@@ -684,7 +684,7 @@ position = Vector2( 110, 80 )
 position = Vector2( 94, 80 )
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
-position = Vector2( 176, 92 )
+position = Vector2( 44.6, 282 )
 
 [node name="ElementalSpawner" parent="." instance=ExtResource( 6 )]
 position = Vector2( 10, 287 )

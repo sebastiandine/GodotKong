@@ -269,6 +269,18 @@ func _on_HammerTimer_timeout():
 	# hammer time has handed
 	
 	has_hammer = false
+	
+func set_pause(mode: bool) -> void:
+	# since the player does not inerhit any Pause signal, we need to implement
+	# the pause here
+	if mode:
+		$AnimationPlayer.pause_mode = true
+		$Hammer/HammerTimer.paused = true
+		self.set_process(false)
+	else:
+		$AnimationPlayer.pause_mode = true
+		$Hammer/HammerTimer.paused = false
+		self.set_process(true)
 "
 
 [sub_resource type="Animation" id=2]
@@ -344,9 +356,9 @@ tracks/1/keys = {
 "values": [ 0.0, 90.0, 180.0, 270.0, 360.0 ]
 }
 
-[sub_resource type="Animation" id=13]
+[sub_resource type="Animation" id=5]
 resource_name = "hammer_running_left"
-length = 0.45
+length = 0.6
 loop = true
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -355,10 +367,10 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.15, 0.3 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
+"times": PoolRealArray( 0, 0.15, 0.3, 0.45 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 1,
-"values": [ 13, 14, 12 ]
+"values": [ 13, 14, 13, 12 ]
 }
 tracks/1/type = "value"
 tracks/1/path = NodePath("Hammer/Sprite_Hammer:visible")
@@ -379,10 +391,10 @@ tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0, 0.15 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0, 0.15, 0.3, 0.45 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 1,
-"values": [ 0, 1 ]
+"values": [ 0, 1, 0, 1 ]
 }
 tracks/3/type = "value"
 tracks/3/path = NodePath("Hammer/Sprite_Hammer:position")
@@ -391,10 +403,10 @@ tracks/3/loop_wrap = true
 tracks/3/imported = false
 tracks/3/enabled = true
 tracks/3/keys = {
-"times": PoolRealArray( 0, 0.15 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0, 0.15, 0.3, 0.45 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 1,
-"values": [ Vector2( -1, -23 ), Vector2( -16, -6 ) ]
+"values": [ Vector2( -1, -23 ), Vector2( -16, -6 ), Vector2( -1, -23 ), Vector2( -16, -6 ) ]
 }
 tracks/4/type = "value"
 tracks/4/path = NodePath("Hammer/Sprite_Hammer:rotation_degrees")
@@ -403,10 +415,10 @@ tracks/4/loop_wrap = true
 tracks/4/imported = false
 tracks/4/enabled = true
 tracks/4/keys = {
-"times": PoolRealArray( 0, 0.15 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0, 0.15, 0.3, 0.45 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 1,
-"values": [ 0.0, -90.0 ]
+"values": [ 0.0, -90.0, 0.0, -90.0 ]
 }
 tracks/5/type = "value"
 tracks/5/path = NodePath("Hammer/HammerHitBox/CollisionShape2D:position")
@@ -415,10 +427,10 @@ tracks/5/loop_wrap = true
 tracks/5/imported = false
 tracks/5/enabled = true
 tracks/5/keys = {
-"times": PoolRealArray( 0, 0.15 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0, 0.15, 0.3, 0.45 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 0,
-"values": [ Vector2( -1, -21 ), Vector2( -15, -6 ) ]
+"values": [ Vector2( -1, -21 ), Vector2( -15, -6 ), Vector2( -1, -21 ), Vector2( -15, -6 ) ]
 }
 tracks/6/type = "value"
 tracks/6/path = NodePath("Hammer/HammerHitBox/CollisionShape2D:rotation_degrees")
@@ -427,10 +439,10 @@ tracks/6/loop_wrap = true
 tracks/6/imported = false
 tracks/6/enabled = true
 tracks/6/keys = {
-"times": PoolRealArray( 0, 0.15 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0, 0.15, 0.3, 0.45 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 0,
-"values": [ 0.0, 90.0 ]
+"values": [ 0.0, 90.0, 0.0, 90.0 ]
 }
 tracks/7/type = "value"
 tracks/7/path = NodePath("Sprite:flip_h")
@@ -445,9 +457,9 @@ tracks/7/keys = {
 "values": [ true ]
 }
 
-[sub_resource type="Animation" id=14]
+[sub_resource type="Animation" id=6]
 resource_name = "hammer_running_right"
-length = 0.45
+length = 0.6
 loop = true
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -456,10 +468,10 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.15, 0.3 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
+"times": PoolRealArray( 0, 0.15, 0.3, 0.45 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 1,
-"values": [ 13, 14, 12 ]
+"values": [ 13, 14, 13, 12 ]
 }
 tracks/1/type = "value"
 tracks/1/path = NodePath("Hammer/Sprite_Hammer:visible")
@@ -480,10 +492,10 @@ tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0, 0.15 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0, 0.15, 0.3, 0.45 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 1,
-"values": [ 0, 1 ]
+"values": [ 0, 1, 0, 1 ]
 }
 tracks/3/type = "value"
 tracks/3/path = NodePath("Hammer/Sprite_Hammer:position")
@@ -492,10 +504,10 @@ tracks/3/loop_wrap = true
 tracks/3/imported = false
 tracks/3/enabled = true
 tracks/3/keys = {
-"times": PoolRealArray( 0, 0.15 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0, 0.15, 0.3, 0.45 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 1,
-"values": [ Vector2( 0, -23 ), Vector2( 14, -6 ) ]
+"values": [ Vector2( 0, -23 ), Vector2( 14, -6 ), Vector2( 0, -23 ), Vector2( 14, -6 ) ]
 }
 tracks/4/type = "value"
 tracks/4/path = NodePath("Hammer/Sprite_Hammer:rotation_degrees")
@@ -504,10 +516,10 @@ tracks/4/loop_wrap = true
 tracks/4/imported = false
 tracks/4/enabled = true
 tracks/4/keys = {
-"times": PoolRealArray( 0, 0.15 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0, 0.15, 0.3, 0.45 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 1,
-"values": [ 0.0, 90.0 ]
+"values": [ 0.0, 90.0, 0.0, 90.0 ]
 }
 tracks/5/type = "value"
 tracks/5/path = NodePath("Hammer/HammerHitBox/CollisionShape2D:position")
@@ -516,10 +528,10 @@ tracks/5/loop_wrap = true
 tracks/5/imported = false
 tracks/5/enabled = true
 tracks/5/keys = {
-"times": PoolRealArray( 0, 0.15 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0, 0.15, 0.3, 0.45 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 0,
-"values": [ Vector2( 0, -21 ), Vector2( 13.5, -5.5 ) ]
+"values": [ Vector2( 0, -21 ), Vector2( 13.5, -5.5 ), Vector2( 0, -21 ), Vector2( 13.5, -5.5 ) ]
 }
 tracks/6/type = "value"
 tracks/6/path = NodePath("Hammer/HammerHitBox/CollisionShape2D:rotation_degrees")
@@ -528,10 +540,10 @@ tracks/6/loop_wrap = true
 tracks/6/imported = false
 tracks/6/enabled = true
 tracks/6/keys = {
-"times": PoolRealArray( 0, 0.15 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0, 0.15, 0.3, 0.45 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 0,
-"values": [ 0.0, 90.0 ]
+"values": [ 0.0, 90.0, 0.0, 90.0 ]
 }
 tracks/7/type = "value"
 tracks/7/path = NodePath("Hammer/Sprite_Hammer:flip_h")
@@ -546,8 +558,7 @@ tracks/7/keys = {
 "values": [ true ]
 }
 
-[sub_resource type="Animation" id=5]
-resource_name = "hammer_standing_left"
+[sub_resource type="Animation" id=7]
 length = 0.3
 loop = true
 tracks/0/type = "value"
@@ -647,8 +658,7 @@ tracks/7/keys = {
 "values": [ true ]
 }
 
-[sub_resource type="Animation" id=6]
-resource_name = "hammer_standing_right"
+[sub_resource type="Animation" id=8]
 length = 0.3
 loop = true
 tracks/0/type = "value"
@@ -748,7 +758,7 @@ tracks/7/keys = {
 "values": [ 0.0, 90.0 ]
 }
 
-[sub_resource type="Animation" id=7]
+[sub_resource type="Animation" id=9]
 length = 0.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -763,7 +773,7 @@ tracks/0/keys = {
 "values": [ 0, 0 ]
 }
 
-[sub_resource type="Animation" id=8]
+[sub_resource type="Animation" id=10]
 length = 0.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -778,7 +788,7 @@ tracks/0/keys = {
 "values": [ 3, 0 ]
 }
 
-[sub_resource type="Animation" id=9]
+[sub_resource type="Animation" id=11]
 length = 0.3
 loop = true
 tracks/0/type = "value"
@@ -794,7 +804,7 @@ tracks/0/keys = {
 "values": [ 1, 2 ]
 }
 
-[sub_resource type="GDScript" id=15]
+[sub_resource type="GDScript" id=12]
 script/source = "extends Node2D
 
 signal hammer_timeout
@@ -818,11 +828,11 @@ func _on_HammerTimer_timeout():
 	disable()
 "
 
-[sub_resource type="RectangleShape2D" id=11]
+[sub_resource type="RectangleShape2D" id=13]
 
-[sub_resource type="RectangleShape2D" id=10]
+[sub_resource type="RectangleShape2D" id=14]
 
-[sub_resource type="RectangleShape2D" id=12]
+[sub_resource type="RectangleShape2D" id=15]
 
 [node name="Player" type="KinematicBody2D"]
 pause_mode = 2
@@ -834,22 +844,22 @@ position = Vector2( -1, -8 )
 texture = ExtResource( 1 )
 vframes = 3
 hframes = 6
-frame = 14
+frame = 12
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/climbing = SubResource( 2 )
 anims/climbing_platform_edge_up = SubResource( 3 )
 anims/dead = SubResource( 4 )
-anims/hammer_running_left = SubResource( 13 )
-anims/hammer_running_right = SubResource( 14 )
-anims/hammer_standing_left = SubResource( 5 )
-anims/hammer_standing_right = SubResource( 6 )
-anims/idle = SubResource( 7 )
-anims/jump = SubResource( 8 )
-anims/running = SubResource( 9 )
+anims/hammer_running_left = SubResource( 5 )
+anims/hammer_running_right = SubResource( 6 )
+anims/hammer_standing_left = SubResource( 7 )
+anims/hammer_standing_right = SubResource( 8 )
+anims/idle = SubResource( 9 )
+anims/jump = SubResource( 10 )
+anims/running = SubResource( 11 )
 
 [node name="Hammer" type="Node2D" parent="."]
-script = SubResource( 15 )
+script = SubResource( 12 )
 
 [node name="Sprite_Hammer" type="Sprite" parent="Hammer"]
 position = Vector2( 14, -6 )
@@ -862,10 +872,10 @@ frame = 1
 [node name="HammerHitBox" type="Area2D" parent="Hammer"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hammer/HammerHitBox"]
-position = Vector2( 11.25, -8.08333 )
-rotation = 1.309
+position = Vector2( 9, -10.6667 )
+rotation = 1.0472
 scale = Vector2( 0.45, 0.5 )
-shape = SubResource( 11 )
+shape = SubResource( 13 )
 
 [node name="HammerTimer" type="Timer" parent="Hammer"]
 wait_time = 5.0
@@ -876,12 +886,12 @@ collision_layer = 4
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerHitBox"]
 position = Vector2( 0, -8 )
 scale = Vector2( 0.55, 0.8 )
-shape = SubResource( 10 )
+shape = SubResource( 14 )
 
 [node name="CollisionShapePhysicEngine" type="CollisionShape2D" parent="."]
 position = Vector2( 0, -0.5 )
 scale = Vector2( 0.5, 0.05 )
-shape = SubResource( 12 )
+shape = SubResource( 15 )
 
 [node name="RayCastRight" type="RayCast2D" parent="."]
 position = Vector2( 5, 0 )

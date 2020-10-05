@@ -1,12 +1,41 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Assets/pixeboy-font/pixeboy-font.tres" type="DynamicFont" id=1]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends Node2D
 
+var current_level: Node2D = null
+var level_paused: bool = false
+
 func _ready():
-	add_level()
+	current_level = add_level()
+	$PauseShade.color = \"00000000\"
+	$PauseLabel.hide()
+
+func _process(delta):
 	
-func add_level():
+	# pause option
+	if Input.is_action_just_pressed(\"pause\"):
+		if not level_paused:
+			level_paused = true
+			$PauseShade.color = \"e0000000\"
+			$PauseLabel.show()
+			current_level.get_tree().paused = true
+			# Player does not inherit pauses, therefore we need to implement
+			# it by hand
+
+			current_level.find_node(\"Player\").set_pause(true)
+			
+		else:
+			level_paused = false
+			$PauseShade.color = \"00000000\"
+			$PauseLabel.hide()
+			current_level.get_tree().paused = false
+			current_level.find_node(\"Player\").set_pause(false)
+			
+	
+func add_level() -> Node2D:
 	# load level, specified by GlobalData as current level
 	
 	var level_src = str(\"res://Scenes/Levels/L\", 
@@ -14,9 +43,32 @@ func add_level():
 						\".tscn\")
 	var level = load(level_src).instance()
 	$Level.add_child(level)
+	
+	return level
 "
 
 [node name="Game" type="Node2D"]
+pause_mode = 2
 script = SubResource( 1 )
 
 [node name="Level" type="Node2D" parent="."]
+pause_mode = 1
+
+[node name="PauseShade" type="ColorRect" parent="."]
+margin_right = 228.0
+margin_bottom = 303.0
+color = Color( 0, 0, 0, 0 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PauseLabel" type="RichTextLabel" parent="."]
+margin_left = 87.3385
+margin_top = 119.055
+margin_right = 142.339
+margin_bottom = 139.055
+custom_fonts/normal_font = ExtResource( 1 )
+text = "PAUSE"
+__meta__ = {
+"_edit_use_anchors_": false
+}
