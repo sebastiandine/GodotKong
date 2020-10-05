@@ -1,7 +1,9 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=20 format=2]
 
 [ext_resource path="res://Assets/jumpman.png" type="Texture" id=1]
 [ext_resource path="res://Assets/hammer.png" type="Texture" id=2]
+[ext_resource path="res://Assets/sound/walk.wav" type="AudioStream" id=3]
+[ext_resource path="res://Assets/sound/jump.wav" type="AudioStream" id=4]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends KinematicBody2D
@@ -102,13 +104,30 @@ func standard_animation() -> void:
 	
 	if velocity.x > 0:
 		$Sprite.flip_h = false
-		animation.play(\"jump\") if jump_mode else animation.play(\"running\")
+		if jump_mode:
+			$Audio/SfxWalk.stop()
+			if not $Audio/SfxJump.is_playing(): $Audio/SfxJump.play()
+			animation.play(\"jump\") 
+		else:
+			if not $Audio/SfxWalk.is_playing(): $Audio/SfxWalk.play()
+			animation.play(\"running\")
 	elif velocity.x < 0:
 		$Sprite.flip_h = true
-		animation.play(\"jump\") if jump_mode else animation.play(\"running\")
+		if jump_mode:
+			$Audio/SfxWalk.stop()
+			if not $Audio/SfxJump.is_playing(): $Audio/SfxJump.play()
+			animation.play(\"jump\") 
+		else:
+			if not $Audio/SfxWalk.is_playing(): $Audio/SfxWalk.play()
+			animation.play(\"running\")
 	else:
+		$Audio/SfxWalk.stop()
 		if not $Sprite.frame == 7:
-			animation.play(\"jump\") if jump_mode else animation.play(\"idle\")
+			if jump_mode:
+				if not $Audio/SfxJump.is_playing(): $Audio/SfxJump.play()
+				animation.play(\"jump\") 
+			else:
+				 animation.play(\"idle\")
 
 func hammer_animation() -> void:
 	if velocity.x > 0:
@@ -845,6 +864,14 @@ texture = ExtResource( 1 )
 vframes = 3
 hframes = 6
 frame = 12
+
+[node name="Audio" type="Node2D" parent="."]
+
+[node name="SfxWalk" type="AudioStreamPlayer2D" parent="Audio"]
+stream = ExtResource( 3 )
+
+[node name="SfxJump" type="AudioStreamPlayer2D" parent="Audio"]
+stream = ExtResource( 4 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/climbing = SubResource( 2 )
