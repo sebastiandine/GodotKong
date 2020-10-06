@@ -1,9 +1,11 @@
-[gd_scene load_steps=20 format=2]
+[gd_scene load_steps=22 format=2]
 
 [ext_resource path="res://Assets/jumpman.png" type="Texture" id=1]
 [ext_resource path="res://Assets/hammer.png" type="Texture" id=2]
 [ext_resource path="res://Assets/sound/walk.wav" type="AudioStream" id=3]
 [ext_resource path="res://Assets/sound/jump.wav" type="AudioStream" id=4]
+[ext_resource path="res://Assets/sound/death.wav" type="AudioStream" id=5]
+[ext_resource path="res://Assets/sound/score.wav" type="AudioStream" id=6]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends KinematicBody2D
@@ -41,6 +43,7 @@ func _process(delta):
 	# check if player is dead, and play dead animation as well as restart
 	# the level in case of death
 	if check_dead():
+		if not $Audio/SfxDeath.is_playing(): $Audio/SfxDeath.play()
 		get_parent().hide_all_game_objects()
 		set_process(false)
 		animation.play(\"dead\")
@@ -265,6 +268,7 @@ func check_score() -> void:
 	if collider != null:
 		if \"Barrel\" in collider.name and \\
 		collider.get_instance_id() != last_score_element:
+			$Audio/SfxScore.play()
 			get_parent().score(100, collider.position)
 			last_score_element = collider.get_instance_id()
 	else:
@@ -349,7 +353,7 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id=4]
 resource_name = "dead"
-length = 1.6
+length = 3.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -863,7 +867,7 @@ position = Vector2( -1, -8 )
 texture = ExtResource( 1 )
 vframes = 3
 hframes = 6
-frame = 12
+frame = 8
 
 [node name="Audio" type="Node2D" parent="."]
 
@@ -872,6 +876,12 @@ stream = ExtResource( 3 )
 
 [node name="SfxJump" type="AudioStreamPlayer2D" parent="Audio"]
 stream = ExtResource( 4 )
+
+[node name="SfxScore" type="AudioStreamPlayer2D" parent="Audio"]
+stream = ExtResource( 6 )
+
+[node name="SfxDeath" type="AudioStreamPlayer2D" parent="Audio"]
+stream = ExtResource( 5 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/climbing = SubResource( 2 )
@@ -946,5 +956,5 @@ cast_to = Vector2( 0, 20 )
 scale = Vector2( 0.2, 0.2 )
 cast_to = Vector2( 0, -35 )
 collide_with_areas = true
-[connection signal="timeout" from="Hammer/HammerTimer" to="." method="_on_HammerTimer_timeout"]
 [connection signal="timeout" from="Hammer/HammerTimer" to="Hammer" method="_on_HammerTimer_timeout"]
+[connection signal="timeout" from="Hammer/HammerTimer" to="." method="_on_HammerTimer_timeout"]
