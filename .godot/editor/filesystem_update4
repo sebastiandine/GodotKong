@@ -1,0 +1,7 @@
+res://default_env.tres
+res://Scenes/Game.tscn
+res://Scenes/Player.tscn
+res://Scenes/Hammer.tscn
+res://Scenes/Barrel.tscn
+res://Scenes/FireElemental.tscn
+res://Scenes/ScorePanel.tscn
