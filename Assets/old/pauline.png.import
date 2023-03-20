@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dqh40ykxbfscm"
-path="res://.godot/imported/firebarrel.png-d144cf9d21aef925712b80f28b927b25.ctex"
+uid="uid://b6bfllcy4pnay"
+path="res://.godot/imported/pauline.png-f7008f5f9d3e4369d0b1c6215a6afd2d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/firebarrel.png"
-dest_files=["res://.godot/imported/firebarrel.png-d144cf9d21aef925712b80f28b927b25.ctex"]
+source_file="res://Assets/old/pauline.png"
+dest_files=["res://.godot/imported/pauline.png-f7008f5f9d3e4369d0b1c6215a6afd2d.ctex"]
 
 [params]
 

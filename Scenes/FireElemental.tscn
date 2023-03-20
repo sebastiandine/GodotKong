@@ -1,19 +1,18 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=3 uid="uid://dt52qc3ix7pxk"]
 
-[ext_resource path="res://Assets/fireelemental.png" type="Texture" id=1]
+[ext_resource type="Texture2D" uid="uid://r3y4sds8jlbg" path="res://Assets/fireelemental.png" id="1_8gql2"]
 
-[sub_resource type="GDScript" id=1]
-script/source = "extends KinematicBody2D
+[sub_resource type="GDScript" id="1"]
+script/source = "extends CharacterBody2D
 
-onready var animation = $AnimationPlayer
-export var direction: int = 1 # 1 = right, -1 left
+@onready var animation = $AnimationPlayer
+@export var direction: int = 1 # 1 = right, -1 left
 
 
 const SPEED = 10
 const GRAVITY = 200
 const UP_VECTOR = Vector2(0,-1) #indicator, how the up direction is defined 
 
-var velocity = Vector2()
 var climbing_dir = 1 # 1 down, -1 up
 
 var is_climbing_ladder = false
@@ -27,10 +26,11 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	floor_snap_length = 2.0
 	if  direction == 1:
-		$Sprite.flip_h = false
+		$Sprite2D.flip_h = false
 	else:
-		$Sprite.flip_h = true
+		$Sprite2D.flip_h = true
 	
 	animation.play(\"moving\")
 	
@@ -57,7 +57,10 @@ func _process(delta):
 	handle_ladder_decision()
 	handle_climb_platform()
 	
-	move_and_slide_with_snap(velocity, Vector2(0,1), UP_VECTOR)
+	set_velocity(velocity)
+	# TODOConverter40 looks that snap in Godot 4.0 is float, not vector like in Godot 3 - previous value `Vector2(0,1)`
+	set_up_direction(UP_VECTOR)
+	move_and_slide()
 	
 	handle_collision()
 
@@ -131,116 +134,117 @@ func handle_ladder_decision():
 
 func handle_climb_platform():
 	# handle ascending platform climbing
-	var raycast = null
+	var raycast: RayCast2D = null
 	if direction == 1:
 		raycast = $RayCastRight
 	else:
 		raycast = $RayCastLeft
-		
 	raycast.force_raycast_update()
-	var collider = raycast.get_collider()
-	if collider != null and collider.name.begins_with(\"Platform\"):
-		position.y -= 1
-	return false
+	var collider: Object = raycast.get_collider()
+	while collider != null and collider.name.begins_with(\"Plat\"):
+		raycast.force_raycast_update()
+		collider = raycast.get_collider()
+		if collider != null and collider.name.begins_with(\"Plat\"):
+			position.y -= 1
 		
 			
 func handle_collision():
 	# handle collision with non player bodies
-	if get_slide_count() > 0:
-		for i in range(get_slide_count()):
-			if \"Elemental\" in get_slide_collision(i).collider.name:
-				if is_climbing_ladder:
-					climbing_dir = -1 * climbing_dir
-				else:
-					direction = -1 * direction
-			
-			# destroy elemental if it collides with a barrel
-			if \"Barrel\" in get_slide_collision(i).collider.name :
-				queue_free()
-	
-	# destroy the elemental, if it hits a hammer. Raise score.
-	for i in $HitBox.get_overlapping_areas():
-		if i.name.begins_with(\"Hammer\"):
-			get_parent().score(100, position)
-			queue_free()
+	if get_slide_collision_count() > 0:
+		for i in range(get_slide_collision_count()):
+			var collider: Object = get_slide_collision(i).get_collider()
+			if collider != null:
+				if \"FireElemental\" in collider.name:
+					if is_climbing_ladder:
+						climbing_dir = -1 * climbing_dir
+					else:
+						direction = -direction
+						position.y -= 5
 "
 
-[sub_resource type="RectangleShape2D" id=2]
-extents = Vector2( 15, 10 )
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(34.2857, 15)
 
-[sub_resource type="RectangleShape2D" id=4]
+[sub_resource type="RectangleShape2D" id="4"]
+size = Vector2(20, 25)
 
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id="3"]
 length = 0.8
-loop = true
 tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.4 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array(0, 0.4),
+"transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [ 0, 1 ]
+"values": [0, 1]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Sprite:position")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 0.4 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array(0, 0.4),
+"transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [ Vector2( 0, -9 ), Vector2( 0, -8 ) ]
+"values": [Vector2(0, -9), Vector2(0, -8)]
 }
 
-[node name="FireElemental" type="KinematicBody2D"]
-script = SubResource( 1 )
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_vnhsf"]
+_data = {
+"moving": SubResource("3")
+}
 
-[node name="Sprite" type="Sprite" parent="."]
-position = Vector2( 0, -8 )
-texture = ExtResource( 1 )
-vframes = 2
+[node name="FireElemental" type="CharacterBody2D"]
+script = SubResource("1")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -9)
+texture = ExtResource("1_8gql2")
 hframes = 2
+vframes = 2
 
 [node name="CollisionShapePhysicEngine" type="CollisionShape2D" parent="."]
-position = Vector2( 0, -1 )
-scale = Vector2( 0.35, 0.1 )
-shape = SubResource( 2 )
+position = Vector2(0, -0.75)
+scale = Vector2(0.35, 0.1)
+shape = SubResource("2")
 
-[node name="HitBox" type="Area2D" parent="."]
+[node name="FireElemental" type="Area2D" parent="."]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
-position = Vector2( 0, -10 )
-scale = Vector2( 0.6, 0.4 )
-shape = SubResource( 4 )
+[node name="FireElemental" type="CollisionShape2D" parent="FireElemental"]
+position = Vector2(0, -9)
+scale = Vector2(0.6, 0.4)
+shape = SubResource("4")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/moving = SubResource( 3 )
+libraries = {
+"": SubResource("AnimationLibrary_vnhsf")
+}
 
 [node name="RayCastRight" type="RayCast2D" parent="."]
-position = Vector2( 6, 0 )
-scale = Vector2( 0.2, 0.1 )
-cast_to = Vector2( 1, 0 )
+position = Vector2(6, 0)
+scale = Vector2(0.2, 0.1)
+target_position = Vector2(1, 0)
 
 [node name="RayCastLeft" type="RayCast2D" parent="."]
-position = Vector2( -6, 0 )
-scale = Vector2( 0.2, 0.1 )
-cast_to = Vector2( -1, 0 )
+position = Vector2(-6, 0)
+scale = Vector2(0.2, 0.1)
+target_position = Vector2(-1, 0)
 
 [node name="RayCastUp" type="RayCast2D" parent="."]
-position = Vector2( 0, -2 )
-scale = Vector2( 0.2, 0.3 )
-cast_to = Vector2( 0, -4 )
+position = Vector2(0, -2)
+scale = Vector2(0.2, 0.3)
+target_position = Vector2(0, -4)
 collide_with_areas = true
 
 [node name="RayCastDown" type="RayCast2D" parent="."]
-position = Vector2( 0, 1 )
-scale = Vector2( 0.2, 0.3 )
-cast_to = Vector2( 0, 4 )
+position = Vector2(0, 1)
+scale = Vector2(0.2, 0.3)
+target_position = Vector2(0, 4)
 collide_with_areas = true
 collide_with_bodies = false

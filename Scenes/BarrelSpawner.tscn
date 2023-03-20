@@ -1,21 +1,21 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://Assets/kong.png" type="Texture" id=1]
-[ext_resource path="res://Assets/barrel.png" type="Texture" id=2]
+[ext_resource path="res://Assets/kong.png" type="Texture2D" id=1]
+[ext_resource path="res://Assets/barrel.png" type="Texture2D" id=2]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends Node2D
 
-onready var animation: AnimationPlayer = $AnimationPlayer
+@onready var animation: AnimationPlayer = $AnimationPlayer
 
 func _on_Timer_timeout() -> void:
 	# decide randomly, whether to spawn a new barrel or not.
 	if randomizer():
 		animation.play(\"spawn_barrel\")
-		yield(animation, \"animation_finished\")
+		await animation.animation_finished
 		
 		var barrel_scene = load(\"res://Scenes/Barrel.tscn\")
-		var barrel = barrel_scene.instance()
+		var barrel = barrel_scene.instantiate()
 		barrel.position = Vector2(position.x + 16, position.y)
 		get_parent().add_child(barrel)
 	else:
@@ -41,8 +41,8 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.6 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array( 0, 0.6 ),
+"transitions": PackedFloat32Array( 1, 1 ),
 "update": 1,
 "values": [ 3, 0 ]
 }
@@ -53,8 +53,8 @@ tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 0.3, 0.6 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.3, 0.6 ),
+"transitions": PackedFloat32Array( 1, 1, 1 ),
 "update": 1,
 "values": [ false, true, false ]
 }
@@ -68,8 +68,8 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.3, 0.6, 0.9 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PackedFloat32Array( 0, 0.3, 0.6, 0.9 ),
+"transitions": PackedFloat32Array( 1, 1, 1, 1 ),
 "update": 1,
 "values": [ 2, 1, 2, 0 ]
 }
@@ -80,8 +80,8 @@ tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 0.3 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array( 0, 0.3 ),
+"transitions": PackedFloat32Array( 1, 1 ),
 "update": 1,
 "values": [ true, false ]
 }
@@ -92,8 +92,8 @@ tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0.6, 0.9 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array( 0.6, 0.9 ),
+"transitions": PackedFloat32Array( 1, 1 ),
 "update": 1,
 "values": [ true, false ]
 }
@@ -105,14 +105,14 @@ script = SubResource( 1 )
 wait_time = 2.0
 autostart = true
 
-[node name="BarrelSprite" type="Sprite" parent="."]
+[node name="BarrelSprite" type="Sprite2D" parent="."]
 visible = false
 position = Vector2( 24.7827, -5.00564 )
 texture = ExtResource( 2 )
 vframes = 2
 hframes = 5
 
-[node name="KongSprite" type="Sprite" parent="."]
+[node name="KongSprite" type="Sprite2D" parent="."]
 position = Vector2( 0, -16 )
 texture = ExtResource( 1 )
 vframes = 4

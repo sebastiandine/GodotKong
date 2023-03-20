@@ -1,8 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://cufkay0fp7kur"]
 
-[ext_resource path="res://Assets/pixeboy-font/pixeboy-font.tres" type="DynamicFont" id=1]
+[ext_resource type="FontFile" path="res://Assets/pixeboy-font/pixeboy-font.tres" id="1_gx2h1"]
 
-[sub_resource type="GDScript" id=1]
+[sub_resource type="GDScript" id="1"]
 script/source = "extends Node2D
 
 var current_level: Node2D = null
@@ -13,7 +13,7 @@ func _ready():
 	$PauseShade.color = \"00000000\"
 	$PauseLabel.hide()
 
-func _process(delta):
+func _process(_delta):
 	
 	# pause option
 	if Input.is_action_just_pressed(\"pause\"):
@@ -25,14 +25,14 @@ func _process(delta):
 			# Player does not inherit pauses, therefore we need to implement
 			# it by hand
 
-			current_level.find_node(\"Player\").set_pause(true)
+			current_level.find_child(\"Player\").set_pause(true)
 			
 		else:
 			level_paused = false
 			$PauseShade.color = \"00000000\"
 			$PauseLabel.hide()
 			current_level.get_tree().paused = false
-			current_level.find_node(\"Player\").set_pause(false)
+			current_level.find_child(\"Player\").set_pause(false)
 			
 	
 func add_level() -> Node2D:
@@ -41,34 +41,28 @@ func add_level() -> Node2D:
 	var level_src = str(\"res://Scenes/Levels/L\", 
 						GlobalData.level,
 						\".tscn\")
-	var level = load(level_src).instance()
+	var level = load(level_src).instantiate()
 	$Level.add_child(level)
 	
 	return level
 "
 
 [node name="Game" type="Node2D"]
-pause_mode = 2
-script = SubResource( 1 )
+process_mode = 2
+script = SubResource("1")
 
 [node name="Level" type="Node2D" parent="."]
-pause_mode = 1
+process_mode = 1
 
 [node name="PauseShade" type="ColorRect" parent="."]
-margin_right = 228.0
-margin_bottom = 303.0
-color = Color( 0, 0, 0, 0 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+offset_right = 228.0
+offset_bottom = 303.0
+color = Color(0, 0, 0, 0)
 
 [node name="PauseLabel" type="RichTextLabel" parent="."]
-margin_left = 87.3385
-margin_top = 119.055
-margin_right = 142.339
-margin_bottom = 139.055
-custom_fonts/normal_font = ExtResource( 1 )
+offset_left = 87.3385
+offset_top = 119.055
+offset_right = 142.339
+offset_bottom = 139.055
+theme_override_fonts/normal_font = ExtResource("1_gx2h1")
 text = "PAUSE"
-__meta__ = {
-"_edit_use_anchors_": false
-}

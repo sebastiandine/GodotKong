@@ -1,0 +1,84 @@
+[gd_scene load_steps=10 format=3 uid="uid://dtnulf8sprrrn"]
+
+[ext_resource type="Script" path="res://Scripts/Dante.gd" id="1_e4qms"]
+[ext_resource type="Texture2D" uid="uid://cy6xk341scqrm" path="res://Assets/jumpman.png" id="2_oaqy4"]
+[ext_resource type="FontFile" path="res://Assets/pixeboy-font/pixeboy-font.tres" id="3_7lbuw"]
+[ext_resource type="AudioStream" uid="uid://csamq72eyl6v8" path="res://Assets/sound/walk.wav" id="4_vbvh0"]
+[ext_resource type="AudioStream" uid="uid://biftp0qjyrn53" path="res://Assets/sound/jump.wav" id="5_ps4f1"]
+[ext_resource type="AudioStream" uid="uid://dmeck6fdclb0o" path="res://Assets/sound/score.wav" id="6_nnngh"]
+[ext_resource type="AudioStream" uid="uid://cmg7oyuhk3btt" path="res://Assets/sound/death.wav" id="7_r8iuo"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w2vaq"]
+size = Vector2(12, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ioib1"]
+size = Vector2(10, 1)
+
+[node name="Dante" type="CharacterBody2D"]
+script = ExtResource("1_e4qms")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_oaqy4")
+hframes = 6
+vframes = 3
+frame = 2
+
+[node name="PlayerHitBox" type="Area2D" parent="."]
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerHitBox"]
+position = Vector2(1, 0)
+shape = SubResource("RectangleShape2D_w2vaq")
+
+[node name="CollisionShapePhysicEngine" type="CollisionShape2D" parent="."]
+position = Vector2(1, 7.5)
+shape = SubResource("RectangleShape2D_ioib1")
+
+[node name="RayCastRight" type="RayCast2D" parent="."]
+position = Vector2(6, 8)
+scale = Vector2(0.2, 0.1)
+target_position = Vector2(1, 0)
+
+[node name="RayCastDown" type="RayCast2D" parent="."]
+position = Vector2(1, 9)
+scale = Vector2(0.2, 0.2)
+target_position = Vector2(0, 10)
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="RayCastDownScore" type="RayCast2D" parent="."]
+position = Vector2(1, 8)
+scale = Vector2(0.2, 0.2)
+target_position = Vector2(0, 20)
+
+[node name="RayCastUp" type="RayCast2D" parent="."]
+position = Vector2(1, 8)
+scale = Vector2(0.2, 0.2)
+target_position = Vector2(0, -35)
+collide_with_areas = true
+
+[node name="RayCastLeft" type="RayCast2D" parent="."]
+position = Vector2(-4, 8)
+scale = Vector2(0.2, 0.1)
+target_position = Vector2(-1, 0)
+
+[node name="test" type="RichTextLabel" parent="."]
+offset_left = -19.0
+offset_top = -32.0
+offset_right = 21.0
+offset_bottom = 8.0
+theme_override_fonts/normal_font = ExtResource("3_7lbuw")
+
+[node name="Audio" type="Node2D" parent="."]
+
+[node name="SfxWalk" type="AudioStreamPlayer2D" parent="Audio"]
+stream = ExtResource("4_vbvh0")
+
+[node name="SfxJump" type="AudioStreamPlayer2D" parent="Audio"]
+stream = ExtResource("5_ps4f1")
+
+[node name="SfxScore" type="AudioStreamPlayer2D" parent="Audio"]
+stream = ExtResource("6_nnngh")
+
+[node name="SfxDeath" type="AudioStreamPlayer2D" parent="Audio"]
+stream = ExtResource("7_r8iuo")

@@ -1,24 +1,23 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=3 uid="uid://cbsajude5kl4d"]
 
-[ext_resource path="res://Assets/barrel.png" type="Texture" id=1]
+[ext_resource type="Texture2D" uid="uid://dx8iltldfm6jt" path="res://Assets/barrel.png" id="1"]
 
-[sub_resource type="GDScript" id=1]
-script/source = "extends KinematicBody2D
+[sub_resource type="GDScript" id="1"]
+script/source = "extends CharacterBody2D
 
-onready var animation: AnimationPlayer = $AnimationPlayer
+@onready var animation: AnimationPlayer = $AnimationPlayer
 
 const SPEED: int = 50
 const GRAVITY: int = 200
 const UP_VECTOR: Vector2 = Vector2(0,-1) #indicator, how the up direction is defined 
 
-var velocity: Vector2 = Vector2()
 var direction: int = 1 # 1 = right, -1 left
 
 var is_falling_ladder: bool = false # indicator, if the barrel is falling down a ladder
 
 
 func _process(delta):
-	
+
 	check_destroy()
 	is_falling_ladder = check_ladder_falling()
 
@@ -40,7 +39,10 @@ func _process(delta):
 		velocity.x = 0
 		velocity.y += GRAVITY * delta # make fall faster the longer the fall
 
-	move_and_slide_with_snap(velocity, Vector2(0,1), UP_VECTOR)
+	set_velocity(velocity)
+	# TODOConverter40 looks that snap in Godot 4.0 is float, not vector like in Godot 3 - previous value `Vector2(0,1)`
+	set_up_direction(UP_VECTOR)
+	move_and_slide()
 	
 func check_ladder_falling() -> bool:
 	# check if the barrel is moving over the top of a ladder and
@@ -71,24 +73,19 @@ func check_destroy() -> void:
 	# destroy the barrel if it reached the lower left corner
 	# or collides with a hammer or fire elemental spawner
 	if floor(position.x) == 8 and position.y > 280:
-		 queue_free()
+		queue_free()
 		
 	#detroy the barrel if it hits the elemental spawner
-	if get_slide_count() > 0:
-		for i in range(get_slide_count()):
-			if get_slide_collision(i).collider != null:
-				if \"ElementalSpawner\" in get_slide_collision(i).collider.name:
-					queue_free()
-	
-	# destroy the barrel, if it hits a hammer. Raise score.
-	for i in $Hitbox.get_overlapping_areas():
-		if i.name.begins_with(\"Hammer\"):
-			get_parent().score(100, position)
-			queue_free()
+	if get_slide_collision_count() > 0:
+		for i in range(get_slide_collision_count()):
+			if get_slide_collision(i) != null:
+				var collider: Object = get_slide_collision(i).get_collider()
+				if collider != null:
+					if \"FireElemental\" in collider.name:
+						get_node(\"CollisionShape2D\").set_deferred(\"disabled\", true)
+					if \"ElementalSpawner\" in collider.name:
+						queue_free()
 
-
-		
-		
 func check_for_ladder() -> bool:
 	# check if the barrel is currently positioned over a ladder.
 	#
@@ -100,73 +97,78 @@ func check_for_ladder() -> bool:
 	return false
 "
 
-[sub_resource type="Animation" id=2]
+[sub_resource type="Animation" id="2"]
 resource_name = "ladder_falling"
 length = 0.4
-loop = true
 tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.2 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [ 5, 6 ]
+"values": [5, 6]
 }
 
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id="3"]
 resource_name = "rolling"
 length = 0.8
-loop = true
 tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.2, 0.4, 0.6 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [ 0, 1, 2, 3 ]
+"values": [0, 1, 2, 3]
 }
 
-[sub_resource type="CircleShape2D" id=4]
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_uvepu"]
+_data = {
+"ladder_falling": SubResource("2"),
+"rolling": SubResource("3")
+}
 
-[sub_resource type="RectangleShape2D" id=5]
+[sub_resource type="CircleShape2D" id="4"]
 
-[node name="Barrel" type="KinematicBody2D"]
-script = SubResource( 1 )
+[sub_resource type="RectangleShape2D" id="5"]
 
-[node name="Sprite" type="Sprite" parent="."]
-position = Vector2( 0, -5 )
-texture = ExtResource( 1 )
-vframes = 2
+[node name="Barrel" type="CharacterBody2D"]
+script = SubResource("1")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -5)
+texture = ExtResource("1")
 hframes = 5
+vframes = 2
 frame = 3
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/ladder_falling = SubResource( 2 )
-anims/rolling = SubResource( 3 )
+libraries = {
+"": SubResource("AnimationLibrary_uvepu")
+}
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( 0, -5 )
-scale = Vector2( 0.6, 0.5 )
-shape = SubResource( 4 )
+position = Vector2(0, -5)
+scale = Vector2(0.6, 0.5)
+shape = SubResource("4")
 
 [node name="RayCast2D" type="RayCast2D" parent="."]
-position = Vector2( 0, 3 )
-scale = Vector2( 0.1, 0.05 )
+position = Vector2(0, 3)
+scale = Vector2(0.1, 0.05)
 collide_with_areas = true
 collide_with_bodies = false
 
-[node name="Hitbox" type="Area2D" parent="."]
-scale = Vector2( 0.6, 0.6 )
+[node name="Barrel" type="Area2D" parent="."]
+scale = Vector2(0.6, 0.6)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
-position = Vector2( 0, -8.33333 )
-scale = Vector2( 1, 0.8 )
-shape = SubResource( 5 )
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Barrel"]
+position = Vector2(0, -8.33333)
+scale = Vector2(1, 0.8)
+shape = SubResource("5")
